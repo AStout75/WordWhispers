@@ -21,6 +21,7 @@ export function initHTTPServer(): Server<typeof IncomingMessage, typeof ServerRe
     //Serve files
     var app = express();
     app.get('/', function(_req: any, res: any) {
+        console.log("just got /");
         res.sendFile(path.join(process.cwd() + serverConfig.INDEX));
     });
     app.use(express.static(path.join(process.cwd(), 'dist')));

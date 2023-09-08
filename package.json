@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npx nodemon",
-    "build": "tsc --build src && node-sass dist/styles/styles.scss dist/styles/styles.css && webpack --config webpack.config.js && nodemon",
+    "build": "tsc --build src && node-sass dist/styles/styles.scss dist/styles/styles.css && webpack --config webpack.config.js",
     "start": "npm run build && nodemon",
     "sass": "sass dist/styles/styles.scss dist/styles/styles.css",
     "tsc": "tsc --build src",

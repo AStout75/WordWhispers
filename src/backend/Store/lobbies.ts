@@ -183,7 +183,5 @@ let lobbies: {[id: string] : LobbyStore} = {
     }
 };
 
-export const wordBank = [] = [
-    "alpaca", "optimus", "genius", "imondrugs", "cocaine", "noob", "bear", "boggle", "pates", "denials", "relates", "relies", "between", "beset", "cappuccino", "honest", "eiffel tower", "serendipity", "aids", "aides", "aider", "aiders", "aerie", "aeries", "aeriest"
-];
+export const wordBank : string[] = require("../Assets/word-lists.json")["basic"];
 export default lobbies;

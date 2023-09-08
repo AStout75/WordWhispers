@@ -7,7 +7,7 @@ import { LobbyStore } from "../backend-types/backend-types";
 
 //Delete later.
 let account1:Account = {
-    username: "420XXNoscoped69XX",
+    username: "420Noscoped69",
     id: "260sdgk32"
 };
 
@@ -103,7 +103,7 @@ let lounge:Lounge = {
 
 let lobbyOneMemberNoTeams:Lobby = {
     lobbySettings: {
-        id: "lobby-cbadef123",
+        id: "cbadef123",
         phase: LobbyPhase.Waiting,
         members: [account1],
         owner: account1,
@@ -132,7 +132,7 @@ let lobbyOneMemberNoTeams:Lobby = {
 
 let lobbyThreeMembersTwoTeams:Lobby = {
     lobbySettings: {
-        id: "lobby-987654123",
+        id: "987654123",
         phase: LobbyPhase.Waiting,
         members: [account2, account3, account4] as Account[],
         owner: account4,
@@ -154,11 +154,11 @@ let lobbyThreeMembersTwoTeams:Lobby = {
     gameState: {
         phase: GamePhase.Guess,
         words: [
-            {word: "alpaca", visibility: WordVisibility.Hidden},
-            {word: "optimus", visibility: WordVisibility.Hidden},
-            {word: "genius", visibility: WordVisibility.Hidden},
-            {word: "imondrugs", visibility: WordVisibility.Hidden},
-            {word: "cocaine", visibility: WordVisibility.Hidden}
+            {word: "MEXICO", visibility: WordVisibility.Hidden},
+            {word: "WALL", visibility: WordVisibility.Hidden},
+            {word: "GENIUS", visibility: WordVisibility.Hidden},
+            {word: "ALPACA", visibility: WordVisibility.Hidden},
+            {word: "BLANK", visibility: WordVisibility.Hidden}
         ] as Word[],
         timer: 5,
         teamStates: [] as TeamState[]

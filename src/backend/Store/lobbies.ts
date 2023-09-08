@@ -166,13 +166,13 @@ let lobbyThreeMembersTwoTeams:Lobby = {
 }
 
 let lobbies: {[id: string] : LobbyStore} = {
-    "lobby-cbadef123": {
+    "cbadef123": {
         lobby: lobbyOneMemberNoTeams,
         locations: {
             "260sdgk32": "lounge"
         }
     },
-    "lobby-987654123": {
+    "987654123": {
         lobby: lobbyThreeMembersTwoTeams,
         locations: {
             "dbv464635": 0,

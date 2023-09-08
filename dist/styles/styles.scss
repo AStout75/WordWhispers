@@ -19,6 +19,14 @@ body {
     color: black;
 }
 
+button { 
+    color: black;
+}
+
+svg {
+    color: black;
+}
+
 h2 {
     font-family: 'Lilita One', cursive;
     font-size: 10vmin;
@@ -302,6 +310,10 @@ section {
     font-size: 24px;
     border-radius: 50%;
     text-align: center;
+}
+
+.refresh-lobby-button > svg {
+    margin: 0 auto;
 }
 
 .select-lobby-button {

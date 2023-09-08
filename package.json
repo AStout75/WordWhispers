@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npx nodemon",
     "build": "npm run tsc && node-sass dist/styles/styles.scss dist/styles/styles.css && webpack --config webpack.config.js",
-    "start": "nodemon",
+    "start": "npx ts-node ./src/backend/init.ts",
     "sass": "sass dist/styles/styles.scss dist/styles/styles.css",
     "tsc": "tsc --build src",
     "webpack": "webpack --config webpack.config.js"
@@ -52,7 +52,6 @@
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
     "@types/react-router-dom": "^5.3.3",
-    "babel-plugin-macros": "^3.1.0",
-    "nodemon": "^2.0.21"
+    "babel-plugin-macros": "^3.1.0"
   }
 }

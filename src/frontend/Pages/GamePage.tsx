@@ -108,7 +108,7 @@ function GameWordsPanel(props: {currentTeamIndex: number}) {
             {gameWords.map( (word, index) => {
                 
                 return (
-                    <WordBox word={word} visible={gameState.teamStates[props.currentTeamIndex].wordsGuessed.includes(word.word)} index={index} />
+                    <WordBox word={word} visible={word.visibility == WordVisibility.Visible ? true : false /*gameState.teamStates[props.currentTeamIndex].wordsGuessed.includes(word.word)*/} index={index} />
                 )
             })}
         </FlexBox>

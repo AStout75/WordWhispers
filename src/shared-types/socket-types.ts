@@ -26,7 +26,7 @@ export interface ServerToClientEvents {
 
     "player-made-bid": (id: string, value: number) => void;
     "player-gave-clue": (id: string, value: string) => void;
-    "player-gave-guess": (id: string, value: string, hit: true) => void;
+    "player-gave-guess": (id: string, value: string, wordIndex: number, hit: true) => void;
 
     //Socials - send a (non-detailed) ping to the entire lobby for the social tab to light up upon this action
     "player-gave-clue-social": (id: string) => void;

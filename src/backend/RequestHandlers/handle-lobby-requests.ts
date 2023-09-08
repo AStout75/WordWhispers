@@ -124,6 +124,14 @@ export function handleChangeRoleRequest(io: Server, socket: Socket<ClientToServe
             throw new Error('Lobby with specified ID doesnt exist:' + lobbyID);
         }
         const location = lobbies[lobbyID].locations[id];
+        if (role == GameRole.Captain) {
+            socket.join(lobby.lobbySettings.id + "-visible");
+            socket.leave(lobby.lobbySettings.id + "-hidden");
+        }
+        else {
+            socket.join(lobby.lobbySettings.id + "-visible");
+            socket.leave(lobby.lobbySettings.id + "-hidden");
+        }
         if (location == "lounge") {
             const players = lobby.gameSettings.lounge.players;
             for (let i = 0; i < players.length; i++) {
@@ -245,9 +253,13 @@ export function handleStartGameRequest(io: Server, socket: Socket<ClientToServer
         if (lobby == undefined) {
             throw new Error('Lobby with specified ID doesnt exist:' + lobbyID);
         }
-        lobby.gameState = generateNewGame(lobby.gameSettings);
+        const visibleGameState = generateNewGame(lobby.gameSettings);
+        const hiddenGameState : GameState = JSON.parse(JSON.stringify(visibleGameState));
+        hiddenGameState.words = hiddenGameState.words.map(() => {const hiddenWord = {word: "???"} as Word; return hiddenWord});
+        lobby.gameState = visibleGameState;
         lobby.lobbySettings.phase = LobbyPhase.Game;
-        io.to(lobby.lobbySettings.id).emit('game-started', lobby.gameState); //Give players game data
+        io.to(lobby.lobbySettings.id + "-visible").emit('game-started', visibleGameState); //Give players game data
+        io.to(lobby.lobbySettings.id + "-hidden").emit('game-started', hiddenGameState); //Give players game data
         console.log("Just set a tiemout for bidding of", DEFAULT_BID_TIME);
         setTimeout(() => {setGamePhase(io, lobby, GamePhase.Guess)}, DEFAULT_BID_TIME);
     }
@@ -297,7 +309,8 @@ function addAccountToLobbyAndReturnNewPlayer(io: Server, socket: Socket<ClientTo
     const newPlayer: Player = {...defaultPlayer, account: account};
     lobbies[lobby.lobbySettings.id].locations[account.id] = "lounge";
     lobby.gameSettings.lounge.players.push(newPlayer);
-    socket.join(lobby.lobbySettings.id + "-lounge")
+    socket.join(lobby.lobbySettings.id + "-lounge");
+    socket.join(lobby.lobbySettings.id + "-hidden");
     return newPlayer;
 }
 

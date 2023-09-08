@@ -100,7 +100,7 @@ export const defaultLobby = {
     gameSettings: {
         wordCount: 10,
         wordPack: WordPack.Classic,
-        guessTime: 150000,
+        guessTime: 120,
         teams: [] as Team[],
         lounge: {players: []} as Lounge,
         ready: {

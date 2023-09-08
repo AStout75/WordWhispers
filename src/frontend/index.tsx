@@ -44,7 +44,7 @@ function App() {
 
         socket.on('player-made-bid', (id: string, bid: number) => {handlePlayerMadeBid(id, bid)});
         socket.on('player-gave-clue', (id: string, clue: string) => {handlePlayerGaveClue(id, clue)});
-        socket.on('player-gave-guess', (id: string, guess: string, hit: boolean) => {handlePlayerGaveGuess(id, guess, hit)});
+        socket.on('player-gave-guess', (id: string, guess: string, wordIndex: number, hit: boolean) => {handlePlayerGaveGuess(id, guess, wordIndex, hit)});
 
         //Socials
         socket.on('player-gave-clue-social', (id: string) => {handleSocialEvent(id, PlayerSpeechAction.GiveClue)});
@@ -217,11 +217,11 @@ function handlePlayerGaveClue(id: string, clue: string) {
     store.dispatch(addClue({account: findAccountObject(id), teamIndex: location as number, clue: clue}));
 }
 
-function handlePlayerGaveGuess(id: string, guess: string, hit: boolean) {
+function handlePlayerGaveGuess(id: string, guess: string, wordIndex: number, hit: boolean) {
     console.log("Received player gave guess");
     const location : number = findPlayerObject(id).location as number;
     if (hit) {
-        store.dispatch(revealWord({word: guess, teamIndex: location}));
+        store.dispatch(revealWord({word: guess, wordIndex: wordIndex, teamIndex: location}));
     }
     store.dispatch(addGuess({account: findAccountObject(id), teamIndex: location, guess: guess, hit: hit}));
 }

@@ -45,15 +45,17 @@ export function handleSubmitGuessRequest (io: Server, socket: Socket<ClientToSer
         throw new Error("Player submitted guess from lounge" + lobbyID + " player id " + id);
     }
     var hit = false;
+    var wordIndex = -1;
     for (var i = 0; i < lobbies[lobbyID].lobby.gameState.words.length; i++) {
         console.log(lobbies[lobbyID].lobby.gameState.words[i].word, value);
-        if (value == lobbies[lobbyID].lobby.gameState.words[i].word) {
+        if (value.toUpperCase() == lobbies[lobbyID].lobby.gameState.words[i].word) {
             hit = true;
+            wordIndex = i;
             break;
         }
     }
     console.log(lobbyID + "-team" + location);
-    io.to(lobbyID + "-team" + location).emit("player-gave-guess", id, value, hit);
+    io.to(lobbyID + "-team" + location).emit("player-gave-guess", id, value, wordIndex, hit);
     if (hit) {io.to(lobbyID).emit("player-gave-guess-hit-social", id)}
     else {io.to(lobbyID).emit("player-gave-guess-miss-social", id)};
     

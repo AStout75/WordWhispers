@@ -1,6 +1,6 @@
 import { createSlice, current, PayloadAction } from '@reduxjs/toolkit'
 import { Account } from '../../../shared-types/account-types';
-import { GameLogEntry, GameLogEntryType, GamePhase, GameRole, GameState } from '../../../shared-types/game-types';
+import { GameLogEntry, GameLogEntryType, GamePhase, GameRole, GameState, WordVisibility } from '../../../shared-types/game-types';
 import { defaultLobby, defaultPlayer, GameSettings, Lobby, LobbySettings, Lounge, Player, PlayerSpeechAction, Team } from '../../../shared-types/lobby-types';
 
 const lobbySlice = createSlice({
@@ -182,8 +182,9 @@ const lobbySlice = createSlice({
             lobby.gameState.teamStates[action.payload.teamIndex].log = [...lobby.gameState.teamStates[action.payload.teamIndex].log, {value: action.payload.guess, type: type, origin: action.payload.account} as GameLogEntry]
         },
 
-        revealWord(lobby, action: PayloadAction<{word: string, teamIndex: number}>) {
-            
+        revealWord(lobby, action: PayloadAction<{word: string, wordIndex: number, teamIndex: number}>) {
+            lobby.gameState.words[action.payload.wordIndex].word = action.payload.word;
+            lobby.gameState.words[action.payload.wordIndex].visibility = WordVisibility.Visible;
         }
     }
 });

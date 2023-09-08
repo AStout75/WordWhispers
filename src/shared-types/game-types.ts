@@ -45,7 +45,7 @@ export interface TeamState {
 
 export interface GameState {
     phase: GamePhase
-    words: [Word],
+    words: Word [],
     timer: number,
     teamStates: TeamState[]
 }

@@ -23,6 +23,7 @@ export interface ServerToClientEvents {
 
     "game-started": (game: GameState) => void;
     "guessing-started": () => void;
+    "game-ended": () => void;
 
     "player-made-bid": (id: string, value: number) => void;
     "player-gave-clue": (id: string, value: string) => void;

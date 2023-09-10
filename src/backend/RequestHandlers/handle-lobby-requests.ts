@@ -8,7 +8,7 @@ import lobbies, { wordBank } from "../Store/lobbies";
 
 const MAX_PLAYERS_PER_LOBBY:number = 16;
 const DEFAULT_BID:number = 25;
-const DEFAULT_BID_TIME:number = 15000;
+const DEFAULT_BID_TIME:number = 10000;
 const DEFAULT_GUESS_TIME:number = 120000;
 
 export function handleViewLobbiesRequest (io: Server, socket: Socket<ClientToServerEvents, ServerToClientEvents>): void {
@@ -260,7 +260,6 @@ export function handleStartGameRequest(io: Server, socket: Socket<ClientToServer
         lobby.lobbySettings.phase = LobbyPhase.Game;
         io.to(lobby.lobbySettings.id + "-visible").emit('game-started', visibleGameState); //Give players game data
         io.to(lobby.lobbySettings.id + "-hidden").emit('game-started', hiddenGameState); //Give players game data
-        console.log("Just set a tiemout for bidding of", DEFAULT_BID_TIME);
         setTimeout(() => {setGamePhase(io, lobby, GamePhase.Guess)}, DEFAULT_BID_TIME);
     }
     catch (e: unknown) {
@@ -280,17 +279,35 @@ function setGamePhase(io: Server, lobby: Lobby, phase: GamePhase) {
     lobby.gameState.phase = phase;
     if (phase == GamePhase.Guess) {
         io.to(lobby.lobbySettings.id).emit('guessing-started');
-        lobby.gameState.timer = Date.now() + lobby.gameSettings.guessTime;
+        lobby.gameState.timer = Date.now() + lobby.gameSettings.guessTime * 1000;
         console.log("Just set a timeout for guessing of", lobby.gameSettings.guessTime * 1000);
-        setTimeout(() => {setGamePhase(io, lobby, GamePhase.End)}, lobby.gameSettings.guessTime * 1000);
+        setTimeout(() => {setGamePhase(io, lobby, GamePhase.End)}, lobby.gameSettings.guessTime * 0);
     }
     if (phase == GamePhase.End) {
-        endGame(lobby);
+        endGame(io, lobby);
     }
 }
 
-function endGame(lobby: Lobby) {
+function endGame(io: Server, lobby: Lobby) {
     console.log("ended the game");
+    lobby.gameState.phase = GamePhase.End;
+    lobby.lobbySettings.phase = LobbyPhase.Waiting;
+    //scoring
+    lobby.gameSettings.teams.forEach((team, index) => {
+        const won = lobby.gameState.teamStates[index].wordsGuessed.length = lobby.gameSettings.wordCount;
+        if (won) {
+            team.players.forEach((player) => {
+                player.score += 100; //100 for winning
+            });
+        }
+        else {
+            team.players.forEach((player) => {
+                player.ready = false;
+            })
+        }
+        
+    })
+    io.to(lobby.lobbySettings.id).emit('game-ended');
 }
 
 /**

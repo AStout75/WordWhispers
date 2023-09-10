@@ -37,6 +37,7 @@ function App() {
 
         socket.on('game-started', (game: GameState) => {handleGameStarted(game, setPage)});
         socket.on('guessing-started', () => {handleGuessingStarted()});
+        socket.on('game-ended', () => {handleGameEnded()});
 
         socket.on('join-lobby-failed', (message: string) => {handleJoinLobbyFailed(message)});
         socket.on('leave-lobby-failed', (message: string) => {handleLeaveLobbyFailed(message)});
@@ -190,18 +191,23 @@ const handleGameStarted = (game: GameState, setPage: Function) => {
     console.log("Received game started");
     store.dispatch(refreshGameState(game));
     setPage(PageType.Game);
-}
+};
 
 const handleGuessingStarted = () => {
     console.log("Received guessing started");
     store.dispatch(setGamePhase(GamePhase.Guess));
+};
+
+const handleGameEnded = () => {
+    console.log("Received game ended");
+    store.dispatch(setGamePhase(GamePhase.End));
 }
 
 /* --- --- JOIN TEAMS OR LOUNGE --- */
 
 function handleChangeLocationFailed(message: string) {
     console.log(message);
-}
+};
 
 /* --- GAME UDPATES --- */
 

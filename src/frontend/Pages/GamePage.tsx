@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import ButtonWithOnClickEvent from '../Elements/ButtonWithOnClickEvent';
 import { sendGiveClueRequest, sendGiveGuessRequest, sendJoinQueueCasualRequest, sendJoinQueueRankedRequest, sendLeaveQueueRequest, sendMakeBidRequest } from '../Socket/socket-events';
-import { PageProps, QueuePageProps, SetAppPageProps} from '../frontend-types/frontend-types';
+import { PageProps, PageType, QueuePageProps, SetAppPageProps} from '../frontend-types/frontend-types';
 import { useSocketContext } from '../Socket/socket-context';
 import { QueueType } from '../../shared-types/misc-types';
 import { selectGameLog, selectGameSettings, selectGameState, selectGameWords, selectLobbySettings, selectTeams } from '../Store/Reducers/lobbySlice';
@@ -52,18 +52,22 @@ export default function GamePage(props: SetAppPageProps) {
 
     const makeBid = (value: any) => {
         sendMakeBidRequest(socket, getAccount().id, lobbySettings.id, value);
+    };
+
+    const backToLobby = () => {
+        props.setPageState(PageType.Lobby);
     }
 
     return (
         <div>
-            <GameMainPanel giveGuessOrClue={giveGuessOrClue} makeBid={makeBid} currentTeamIndex={currentTeamIndex} />
+            <GameMainPanel giveGuessOrClue={giveGuessOrClue} makeBid={makeBid} backToLobby={backToLobby} currentTeamIndex={currentTeamIndex} />
             <br></br>
             <GameSocialPanel currentTeamIndex={currentTeamIndex}/>
         </div>
     )
 }
 
-function GameMainPanel(props: {giveGuessOrClue: Function, makeBid: Function, currentTeamIndex: number}) {
+function GameMainPanel(props: {giveGuessOrClue: Function, makeBid: Function, backToLobby: Function, currentTeamIndex: number}) {
     const gameState: GameState = useSelector(selectGameState);
     const player: Player = useSelector(selectPlayer);
     var text = "";
@@ -78,7 +82,7 @@ function GameMainPanel(props: {giveGuessOrClue: Function, makeBid: Function, cur
             <FancyHRTitle text={"Hidden Words"} titleClass={''} />
             <GameWordsPanel currentTeamIndex={props.currentTeamIndex} />
             <FancyHRTitle text={text} titleClass={''} />
-            <GameInputPanel giveGuessOrClue={props.giveGuessOrClue} makeBid={props.makeBid} currentTeamIndex={props.currentTeamIndex} />
+            <GameInputPanel giveGuessOrClue={props.giveGuessOrClue} makeBid={props.makeBid} backToLobby={props.backToLobby} currentTeamIndex={props.currentTeamIndex} />
             <FancyHRTitle text={"Game Log"} titleClass={''} />
             <GameLogPanel currentTeamIndex={props.currentTeamIndex} />
         </div>
@@ -94,8 +98,9 @@ function GameStatusBar(props: {currentTeamIndex: number}) {
         <div className="game-status-bar text-center rounded">
             {gameState.phase == GamePhase.Bid && player.role == GameRole.Crew && "Your team captain(s) can see the words and are predicting how many clue words they'll need to give you."}
             {gameState.phase == GamePhase.Bid && player.role == GameRole.Captain && "Bid the amount of clue words you'll need to get your teammates to guess these hidden words."}
-            {gameState.phase == GamePhase.Guess && player.role == GameRole.Captain && "You have " + (gameState.teamStates[props.currentTeamIndex].currentBid - gameState.teamStates[props.currentTeamIndex].cluesGiven.length) + "clues left to give your team!"}
+            {gameState.phase == GamePhase.Guess && player.role == GameRole.Captain && "You have " + (gameState.teamStates[props.currentTeamIndex].currentBid - gameState.teamStates[props.currentTeamIndex].cluesGiven.length) + " clues left to give your team!"}
             {gameState.phase == GamePhase.Guess && player.role == GameRole.Crew && "Using your team captain(s)'s clues, guess the hidden words! You have unlimited guesses."}
+            {gameState.phase == GamePhase.End && "The game has ended."}
         </div>
     )
 }
@@ -151,13 +156,23 @@ function GameLogPanel(props: {currentTeamIndex: number}) {
     )
 }
 
-function GameInputPanel(props: {giveGuessOrClue: Function, makeBid: Function, currentTeamIndex: number}) {
+function GameInputPanel(props: {giveGuessOrClue: Function, makeBid: Function, backToLobby: Function, currentTeamIndex: number}) {
     const gameState: GameState = useSelector(selectGameState);
     return (
         <div>
             {gameState.phase == GamePhase.Bid && <GameBidPanel onSubmit={(event: any) => {props.makeBid(event.target[0].value)}} currentTeamIndex={props.currentTeamIndex} />}
             {gameState.phase == GamePhase.Guess && <GameGuessOrCluePanel onSubmit={(event: any) => {props.giveGuessOrClue(event.target[0].value)}} />}
+            {gameState.phase == GamePhase.End && <GameSummaryPanel backToLobby={props.backToLobby} />}
         </div>
+    )
+}
+
+function GameSummaryPanel(props: {backToLobby: Function}) {
+    return (
+        <FlexBox classes={"justify-content-center align-items-center"}>
+            <div className="big-action-button-slim continue-button" onClick={() => props.backToLobby()}>Continue</div>
+        </FlexBox>
+        
     )
 }
 

@@ -281,7 +281,7 @@ function setGamePhase(io: Server, lobby: Lobby, phase: GamePhase) {
         io.to(lobby.lobbySettings.id).emit('guessing-started');
         lobby.gameState.timer = Date.now() + lobby.gameSettings.guessTime * 1000;
         console.log("Just set a timeout for guessing of", lobby.gameSettings.guessTime * 1000);
-        setTimeout(() => {setGamePhase(io, lobby, GamePhase.End)}, lobby.gameSettings.guessTime * 0);
+        setTimeout(() => {setGamePhase(io, lobby, GamePhase.End)}, lobby.gameSettings.guessTime * 1000);
     }
     if (phase == GamePhase.End) {
         endGame(io, lobby);

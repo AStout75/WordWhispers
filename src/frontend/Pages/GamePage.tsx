@@ -209,6 +209,7 @@ function LogEntry(props: {entry: GameLogEntry}) {
 }
 
 function GameBidPanel(props: {onSubmit: Function, currentTeamIndex: number}) {
+    const player = useSelector(selectPlayer);
     const [value, setValue] = useState(10);
     var input = () => {
         return(<input className="game-bid-input" id="bid-input" value={value} readOnly type="number" max="50" min="1" />)
@@ -224,25 +225,33 @@ function GameBidPanel(props: {onSubmit: Function, currentTeamIndex: number}) {
             setValue(value + 1);
         }
     }
-    return (
-            <FlexBox classes="game-bid-container justify-content-around flex-wrap">
-                <form className="d-flex flex-column align-items-center" onSubmit={function(event) {event.preventDefault(); props.onSubmit(event)}}>
-                    <FlexBox classes={"game-bid-input-container rounded"}>
-                        <FlexBox classes="arrow-container flex-column justify-content-center align-items-left">
-                            <div className="left-arrow" onClick={() => decrementOne()} ></div>
-                        </FlexBox>
-                        <FlexBox classes="flex-column justify-content-center">
-                            {input()}
-                        </FlexBox>
-                        <FlexBox classes="arrow-container flex-column justify-content-center align-items-left">
-                            <div className="right-arrow" onClick={() => incrementOne()}></div>
-                        </FlexBox>
-                    </FlexBox>
-                    <input type="submit" className="make-bid-button" value="Make a Bid" />
-                </form>
-                <GameBidPanelTeams currentTeamIndex={props.currentTeamIndex} />
-                
+    const bidPanel = 
+    <FlexBox classes="game-bid-container justify-content-around flex-wrap">
+        <form className="d-flex flex-column align-items-center" onSubmit={function(event) {event.preventDefault(); props.onSubmit(event)}}>
+            <FlexBox classes={"game-bid-input-container rounded"}>
+                <FlexBox classes="arrow-container flex-column justify-content-center align-items-left">
+                    <div className="left-arrow" onClick={() => decrementOne()} ></div>
+                </FlexBox>
+                <FlexBox classes="flex-column justify-content-center">
+                    {input()}
+                </FlexBox>
+                <FlexBox classes="arrow-container flex-column justify-content-center align-items-left">
+                    <div className="right-arrow" onClick={() => incrementOne()}></div>
+                </FlexBox>
             </FlexBox>
+            <input type="submit" className="make-bid-button" value="Make a Bid" />
+        </form>
+        <GameBidPanelTeams currentTeamIndex={props.currentTeamIndex} />
+    </FlexBox>;
+
+    const waitPanel = 
+    <GameBidPanelTeams currentTeamIndex={props.currentTeamIndex} />;
+
+    return (
+            <div>
+                {player.role == GameRole.Captain && bidPanel}
+                {player.role == GameRole.Crew && waitPanel}
+            </div>
     )
 }
 

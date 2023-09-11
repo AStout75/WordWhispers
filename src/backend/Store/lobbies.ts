@@ -114,7 +114,7 @@ let lobbyOneMemberNoTeams:Lobby = {
     gameSettings: {
         wordCount: 15,
         wordPack: WordPack.Classic,
-        guessTime: 5,
+        guessTime: 60,
         teams: [] as Team[],
         lounge: {players: [player1]} as Lounge,
         ready: {

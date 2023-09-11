@@ -8,7 +8,7 @@ import lobbies, { wordBank } from "../Store/lobbies";
 
 const MAX_PLAYERS_PER_LOBBY:number = 16;
 const DEFAULT_BID:number = 25;
-const DEFAULT_BID_TIME:number = 10000;
+const DEFAULT_BID_TIME:number = 20000;
 const DEFAULT_GUESS_TIME:number = 120000;
 
 export function handleViewLobbiesRequest (io: Server, socket: Socket<ClientToServerEvents, ServerToClientEvents>): void {

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import ButtonWithOnClickEvent from '../Elements/ButtonWithOnClickEvent';
 import { sendJoinQueueCasualRequest, sendJoinQueueRankedRequest, sendViewLobbiesRequest } from '../Socket/socket-events';
-import { PageProps, SetAppPageProps } from '../frontend-types/frontend-types';
+import { PageProps, PageType, SetAppPageProps } from '../frontend-types/frontend-types';
 import { useSocketContext } from '../Socket/socket-context';
 import InfoPanel from '../Elements/InfoPanel';
 import { animateButtons, animateTitleBottom, animateTitleTop } from '../Utils/animate-title';
@@ -14,13 +14,13 @@ export default function IndexPage(props: SetAppPageProps) {
     const socket = useSocketContext();
     const clickedCustomLobbies = () => {
         sendViewLobbiesRequest(socket);
-        props.setPageState("lobbies");
+        props.setPageState(PageType.Lobbies);
     };
     const clickedQueue = () => {
-        props.setPageState("queue");
+        props.setPageState(PageType.Lobbies);
     };
     const clickedSpectate = () => {
-        props.setPageState("queue");
+        props.setPageState(PageType.Lobbies);
     };
     const clickedRules = () => {
 

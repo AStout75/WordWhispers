@@ -1,7 +1,7 @@
-import express from "express";
+import express = require("express")
 import { IncomingMessage, Server, ServerResponse } from "http";
-import path from "path";
-import {Server as socketIO, Socket} from "socket.io";
+import path = require("path")
+import {Server as socketIO, Socket, ServerOptions} from "socket.io";
 import { Account } from "../../shared-types/account-types";
 import { GameRole } from "../../shared-types/game-types";
 import { ClientToServerEvents, ServerToClientEvents } from "../../shared-types/socket-types";
@@ -26,13 +26,15 @@ export function initHTTPServer(): Server<typeof IncomingMessage, typeof ServerRe
     });
     app.use(express.static(path.join(process.cwd(), 'dist')));
 
-    return app.listen(serverConfig.PORT, () => console.log(`Listening on ${serverConfig.PORT}`));
+    let httpServer = require('http').createServer(app)
+    httpServer.listen(serverConfig.PORT, () => console.log(`Listening on ${serverConfig.PORT}`))
+    return httpServer;
+    //app.listen(serverConfig.PORT, () => console.log(`Listening on ${serverConfig.PORT}`));
 }
 
-export function initSocketServer(server: Server<typeof IncomingMessage, typeof ServerResponse>): socketIO {
-    const io = new socketIO<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(server);
+export function initSocketServer(server: Server<typeof IncomingMessage, typeof ServerResponse>, test: boolean): socketIO {
+    const io = new socketIO<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(server, {multiplex: !test} as Partial<ServerOptions>);
     io.on('connection', (socket: Socket<ClientToServerEvents, ServerToClientEvents>) => {
-        console.log("connection");
         addListenersForNewConnection(io, socket);
     });
     return io;

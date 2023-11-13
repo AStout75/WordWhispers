@@ -38,7 +38,7 @@ export function handleCreateLobbyRequest (io: Server, socket: Socket<ClientToSer
         } else if (e instanceof Error) {
             errorMessage += e.message // works, `e` narrowed to Error
         }
-        socket.emit('join-lobby-failed', errorMessage);
+        socket.emit('create-lobby-failed', errorMessage);
     }
 }
 
@@ -322,6 +322,13 @@ function addAccountToLobbyAndReturnNewPlayer(io: Server, socket: Socket<ClientTo
     if (lobby.lobbySettings.members.length == MAX_PLAYERS_PER_LOBBY) {
         throw new Error('Lobby is full/');
     }
+    Object.keys(lobbies).forEach((id) => {
+        Object.keys(lobbies[id].locations).forEach((playerId) => {
+            if (playerId == account.id) {
+                throw new Error('Account is already in a lobby/')
+            }
+        })
+    })
     lobby.lobbySettings.members.push(account);
     const newPlayer: Player = {...defaultPlayer, account: account};
     lobbies[lobby.lobbySettings.id].locations[account.id] = "lounge";

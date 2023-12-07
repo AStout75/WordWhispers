@@ -1,7 +1,7 @@
 import { Server, Socket } from "socket.io";
 import { Account } from "../../shared-types/account-types";
 import { GameLogEntry, GamePhase, GameRole, GameState, TeamState, Word, WordVisibility } from "../../shared-types/game-types";
-import { defaultLobby, defaultPlayer, GameSettings, Lobby, LobbyPhase, Lounge, Player, Team } from "../../shared-types/lobby-types";
+import { defaultGameState, defaultLobby, defaultPlayer, GameSettings, Lobby, LobbyPhase, Lounge, Player, Team } from "../../shared-types/lobby-types";
 import { ClientToServerEvents, ServerToClientEvents } from "../../shared-types/socket-types";
 import { LobbyStore } from "../backend-types/backend-types";
 import lobbies, { wordBank } from "../Store/lobbies";
@@ -24,7 +24,7 @@ export function handleCreateLobbyRequest (io: Server, socket: Socket<ClientToSer
     console.log("create lobby requested by", account);
     let errorMessage = "Cannot create lobby";
     try {
-        let lobby:Lobby = defaultLobby;
+        let lobby:Lobby = {...defaultLobby};
         lobby.lobbySettings.id = Date.now().toString();
         lobby.lobbySettings.owner = account;
         lobbies[lobby.lobbySettings.id] = {lobby: lobby, locations: {}};
@@ -76,11 +76,15 @@ export function handleLeaveLobbyRequest (io: Server, socket: Socket<ClientToServ
             throw new Error('Lobby with specified ID doesnt exist:' + lobbyID);
         }
         removeAccountFromLobby(socket, id, lobby);
+        
         socket.emit('leave-lobby-success'); //Inform player leave succeeded
         io.to(lobbyID).except(socket.id).emit('player-left-lobby', id); //Inform lobby
         socket.rooms.forEach((room) => {
             socket.leave(room);
         })
+        if (lobby.lobbySettings.members.length == 0) {
+            delete lobbies[lobby.lobbySettings.id]
+        }
     }
     catch (e: unknown) {
         if (typeof e === "string") {
@@ -124,14 +128,17 @@ export function handleChangeRoleRequest(io: Server, socket: Socket<ClientToServe
             throw new Error('Lobby with specified ID doesnt exist:' + lobbyID);
         }
         const location = lobbies[lobbyID].locations[id];
-        if (role == GameRole.Captain) {
-            socket.join(lobby.lobbySettings.id + "-visible");
-            socket.leave(lobby.lobbySettings.id + "-hidden");
+        if (location != "lounge") {
+            if (role == GameRole.Captain) {
+                socket.join(lobby.lobbySettings.id + "-visible");
+                socket.leave(lobby.lobbySettings.id + "-hidden");
+            }
+            else {
+                socket.join(lobby.lobbySettings.id + "-visible");
+                socket.leave(lobby.lobbySettings.id + "-hidden");
+            }
         }
-        else {
-            socket.join(lobby.lobbySettings.id + "-visible");
-            socket.leave(lobby.lobbySettings.id + "-hidden");
-        }
+        
         if (location == "lounge") {
             const players = lobby.gameSettings.lounge.players;
             for (let i = 0; i < players.length; i++) {
@@ -255,10 +262,11 @@ export function handleStartGameRequest(io: Server, socket: Socket<ClientToServer
         }
         const visibleGameState = generateNewGame(lobby.gameSettings);
         const hiddenGameState : GameState = JSON.parse(JSON.stringify(visibleGameState));
-        hiddenGameState.words = hiddenGameState.words.map(() => {const hiddenWord = {word: "???"} as Word; return hiddenWord});
+        hiddenGameState.words = hiddenGameState.words.map(() => {return {word: "???"} as Word});
         lobby.gameState = visibleGameState;
         lobby.lobbySettings.phase = LobbyPhase.Game;
         io.to(lobby.lobbySettings.id + "-visible").emit('game-started', visibleGameState); //Give players game data
+        //console.log("Just sent visiblegamestate", visibleGameState, "and hidden game state", hiddenGameState)
         io.to(lobby.lobbySettings.id + "-hidden").emit('game-started', hiddenGameState); //Give players game data
         setTimeout(() => {setGamePhase(io, lobby, GamePhase.Guess)}, DEFAULT_BID_TIME);
     }
@@ -290,8 +298,9 @@ function setGamePhase(io: Server, lobby: Lobby, phase: GamePhase) {
 
 function endGame(io: Server, lobby: Lobby) {
     console.log("ended the game");
-    lobby.gameState.phase = GamePhase.End;
-    lobby.lobbySettings.phase = LobbyPhase.Waiting;
+    
+    
+    
     //scoring
     lobby.gameSettings.teams.forEach((team, index) => {
         const won = lobby.gameState.teamStates[index].wordsGuessed.length = lobby.gameSettings.wordCount;
@@ -307,6 +316,8 @@ function endGame(io: Server, lobby: Lobby) {
         }
         
     })
+    lobby.gameState.phase = GamePhase.End;
+    lobby.lobbySettings.phase = LobbyPhase.Waiting;
     io.to(lobby.lobbySettings.id).emit('game-ended');
 }
 
@@ -331,10 +342,11 @@ function addAccountToLobbyAndReturnNewPlayer(io: Server, socket: Socket<ClientTo
     })
     lobby.lobbySettings.members.push(account);
     const newPlayer: Player = {...defaultPlayer, account: account};
-    lobbies[lobby.lobbySettings.id].locations[account.id] = "lounge";
-    lobby.gameSettings.lounge.players.push(newPlayer);
-    socket.join(lobby.lobbySettings.id + "-lounge");
-    socket.join(lobby.lobbySettings.id + "-hidden");
+    addPlayerToLounge(socket, lobby, newPlayer)
+    // lobbies[lobby.lobbySettings.id].locations[account.id] = "lounge";
+    // lobby.gameSettings.lounge.players.push(newPlayer);
+    // socket.join(lobby.lobbySettings.id + "-lounge");
+    // socket.join(lobby.lobbySettings.id + "-hidden");
     return newPlayer;
 }
 
@@ -358,16 +370,24 @@ function addPlayerToLocation(socket: Socket<ClientToServerEvents, ServerToClient
 }
 
 function addPlayerToLounge(socket: Socket<ClientToServerEvents, ServerToClientEvents>, lobby: Lobby, player: Player) {
-    lobby.gameSettings.lounge.players.push(player);
     lobbies[lobby.lobbySettings.id].locations[player.account.id] = "lounge";
+    lobby.gameSettings.lounge.players.push(player);
     socket.join(lobby.lobbySettings.id + "-lounge");
+    socket.join(lobby.lobbySettings.id + "-hidden");
+    
 }
 
 function addPlayerToTeamIndex(socket: Socket<ClientToServerEvents, ServerToClientEvents>, lobby: Lobby, player: Player, index: number) {
     console.log("add player to team index");
+    if (player.role == GameRole.Captain) {
+        socket.join(lobby.lobbySettings.id + "-visible");
+        socket.leave(lobby.lobbySettings.id + "-hidden");
+    }
+    
     lobby.gameSettings.teams[index].players.push(player);
     lobbies[lobby.lobbySettings.id].locations[player.account.id] = index;
     socket.join(lobby.lobbySettings.id + "-team" + index)
+
 }
 
 /**
@@ -378,8 +398,12 @@ function addPlayerToTeamIndex(socket: Socket<ClientToServerEvents, ServerToClien
  */
 
 function removeAccountFromLobby(socket: Socket<ClientToServerEvents, ServerToClientEvents>, id: string, lobby: Lobby) {
+    console.log("removing from lobby")
     removeAccountFromLobbyMembers(id, lobby);
     removeAccountFromLobbyLocation(socket, id, lobby);
+    // socket.leave(lobby.lobbySettings.id)
+    // socket.leave(lobby.lobbySettings.id + "-hidden")
+    // socket.leave(lobby.lobbySettings.id + "-visible")
 }
 
 function removeAccountFromLobbyMembers(id: string, lobby: Lobby) {
@@ -398,8 +422,9 @@ function removeAccountFromLobbyMembers(id: string, lobby: Lobby) {
 
 function removeAccountFromLobbyLocation(socket: Socket<ClientToServerEvents, ServerToClientEvents>, id: string, lobby: Lobby):Player {
     const location : number | string = lobbies[lobby.lobbySettings.id].locations[id];
+    delete lobbies[lobby.lobbySettings.id].locations[id];
     if (location == "lounge") {
-        console.log("remove from lougne");
+        console.log("remove from lounge");
         return removeAccountFromLobbyLounge(socket, id, lobby);
     }
     console.log("remove from ", location);
@@ -453,5 +478,6 @@ function generateNewGame(settings: GameSettings): GameState {
             log: [] as GameLogEntry[]
         } as TeamState
     })
+    console.log("new state: ", state)
     return state;
 }

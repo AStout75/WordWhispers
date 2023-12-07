@@ -39,6 +39,7 @@ function App() {
         socket.on('guessing-started', () => {handleGuessingStarted()});
         socket.on('game-ended', () => {handleGameEnded()});
 
+        socket.on('create-lobby-failed', (message: string) => handleCreateLobbyFailed(message))
         socket.on('join-lobby-failed', (message: string) => {handleJoinLobbyFailed(message)});
         socket.on('leave-lobby-failed', (message: string) => {handleLeaveLobbyFailed(message)});
         socket.on('change-location-failed', (message: string) => {handleChangeLocationFailed(message)});
@@ -83,6 +84,11 @@ const handleCreateLobbySuccess = (newLobby: Lobby, setPage: Function) => {
     store.dispatch(refreshGameSettings(newLobby.gameSettings));
     setPage(PageType.Lobby);
 }
+
+const handleCreateLobbyFailed = (message: string) => {
+    console.log("Create Lobby Failed: ", message);
+}
+
 const handleLobbies = (lobbies:Lobby[], setPage: Function) => {
     console.log("Received lobbies");
     store.dispatch(refreshLobbies(lobbies));
@@ -104,7 +110,7 @@ const handlePlayerJoinedLobby = (player: Player) => {
 }
 
 const handleJoinLobbyFailed = (message: string) => {
-    console.log("ERROR: ", message);
+    console.log("Join Lobby Failed: ", message);
 }
 
 /* --- --- LEAVE LOBBY --- */

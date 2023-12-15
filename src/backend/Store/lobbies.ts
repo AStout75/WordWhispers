@@ -7,22 +7,22 @@ import { LobbyStore } from "../backend-types/backend-types";
 
 //Delete later.
 let account1:Account = {
-    username: "420Noscoped69",
+    username: "Test account 1",
     id: "260sdgk32"
 };
 
 let account2:Account = {
-    username: "Bob buttface",
+    username: "Test account 2",
     id: "dbv464635"
 };
 
 let account3:Account = {
-    username: "Joe mama",
+    username: "Test account 3",
     id: "2d999fvmd"
 };
 
 let account4:Account = {
-    username: "Your brother",
+    username: "Test account 4",
     id: "cbewetwto"
 };
 

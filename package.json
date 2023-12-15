@@ -6,6 +6,7 @@
   "scripts": {
     "test": "mocha -r ts-node/register 'test/**/*.ts'",
     "dev": "npx nodemon",
+    "compile": "npm run tsc && webpack --config webpack.config.js",
     "build": "npm run tsc && node-sass dist/styles/styles.scss dist/styles/styles.css && webpack --config webpack.config.js",
     "start": "npx ts-node ./src/backend/init.ts",
     "sass": "sass dist/styles/styles.scss dist/styles/styles.css",

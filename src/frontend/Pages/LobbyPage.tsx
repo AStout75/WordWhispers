@@ -87,20 +87,20 @@ export default function LobbyPage(props: LobbyPageProps) {
     return (
         <div>
             <FancyHRTitle text={lobbySettings.id} titleClass="lobby-title" />
-            <FlexBox classes={'lobby-settings-panel justify-content-between align-items-center rounded'}>
+            <FlexBox classes={'justify-content-between align-items-center py-3'}>
                 <button type="button" className={"big-action-button-slim return-home-button"} onClick={() => {clickedLeaveLobby(); props.setPageState(PageType.Lobbies)}}><FontAwesomeIcon icon={solid("arrow-left")} /> Back</button>
-                    <FlexBox classes={""}>
-                        <form className="d-flex">
-                            <FlexBox classes="change-role-container align-items-center">
-                                <ChangeRoleButton onClick={() => clickedChangeRole(GameRole.Captain)} role={GameRole.Captain} />
-                                <ChangeRoleButton onClick={() => clickedChangeRole(GameRole.Crew)} role={GameRole.Crew} />
-                            </FlexBox>
-                        </form>
-                    </FlexBox>
-                    <div>
-                        <button type="button" className={"ready-button mr-3" + (player.ready ? " ready-button-depressed" : "")} onClick={() => clickedChangeReady()}>{player.ready ? "Ready!" : "Ready up"}</button>
-                        <ButtonWithOnClickEvent disabled={!canStart} onClick={clickedStartGame} wrapperClass={'d-inline-block'} buttonClass={'big-action-button-slim start-game-button' + (canStart ? " start-game-button-enabled" : "")} buttonText={"Start"} />
-                    </div>
+                <ButtonWithOnClickEvent disabled={!canStart} onClick={clickedStartGame} wrapperClass={'d-inline-block'} buttonClass={'big-action-button-slim start-game-button' + (canStart ? " start-game-button-enabled" : "")} buttonText={"Start"} />
+            </FlexBox>
+            <FlexBox classes={'lobby-settings-panel justify-content-between align-items-center rounded'}>
+                <FlexBox classes={""}>
+                    <form className="d-flex">
+                        <FlexBox classes="change-role-container align-items-center">
+                            <ChangeRoleButton onClick={() => clickedChangeRole(GameRole.Captain)} role={GameRole.Captain} />
+                            <ChangeRoleButton onClick={() => clickedChangeRole(GameRole.Crew)} role={GameRole.Crew} />
+                        </FlexBox>
+                    </form>
+                </FlexBox>
+                <button type="button" className={"ready-button" + (player.ready ? " ready-button-depressed" : "")} onClick={() => clickedChangeReady()}>{player.ready ? "Ready!" : "Ready up"}</button>
             </FlexBox>
             <FancyHRTitle text={"Join a team"} titleClass={""} />
             <FlexBox classes={'flex-wrap mb-3 teams-container'}>
@@ -120,9 +120,12 @@ export default function LobbyPage(props: LobbyPageProps) {
                 })}
                 {
                 !hasEmptyTeam && 
-                <div className="text-center">
-                        <NewTeamPanel index={teams.length} addTeam={clickedAddNewTeam} />
-                </div>
+                <FlexBox classes="flex-column justify-content-between align-items-center">
+                    <NewTeamPanel index={teams.length} addTeam={clickedAddNewTeam} />
+                    <div className="new-team-plus-button" onClick={() => clickedAddNewTeam()}>
+                        <FontAwesomeIcon icon={solid("plus")}/>
+                    </div>
+                </FlexBox>
                 }
             </FlexBox>
             <FancyHRTitle text={"Spectate or go AFK"} titleClass={""} />
@@ -158,7 +161,7 @@ function LoungePanel(props: {currentTeamIndex: number}) {
             <div>
                 The Lounge (spectating)
             </div>
-            <FlexBox classes="justify-content-around flex-wrap">
+            <FlexBox classes="justify-content-start flex-wrap">
                 {lounge.players.map( (player) => {
                     return <Avatar player={player} />
                 })}

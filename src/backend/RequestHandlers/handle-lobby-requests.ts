@@ -280,6 +280,10 @@ export function handleStartGameRequest(io: Server, socket: Socket<ClientToServer
     }
 }
 
+export function handleDisconnect(io: Server, socket: Socket<ClientToServerEvents, ServerToClientEvents>) {
+
+}
+
 // --- UTILS ---
 
 function setGamePhase(io: Server, lobby: Lobby, phase: GamePhase) {

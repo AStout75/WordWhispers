@@ -6,7 +6,7 @@ import { Account } from "../../shared-types/account-types";
 import { GameRole } from "../../shared-types/game-types";
 import { ClientToServerEvents, ServerToClientEvents } from "../../shared-types/socket-types";
 import { InterServerEvents, SocketData } from "../backend-types/backend-types";
-import { handleAddTeamRequest, handleChangeLocationRequest, handleChangeReadyRequest, handleChangeRoleRequest, handleCreateLobbyRequest, handleDeleteTeamRequest, handleJoinLobbyRequest, handleLeaveLobbyRequest, handleStartGameRequest, handleViewLobbiesRequest } from "../RequestHandlers/handle-lobby-requests";
+import { handleAddTeamRequest, handleChangeLocationRequest, handleChangeReadyRequest, handleChangeRoleRequest, handleCreateLobbyRequest, handleDeleteTeamRequest, handleDisconnect, handleJoinLobbyRequest, handleLeaveLobbyRequest, handleStartGameRequest, handleViewLobbiesRequest } from "../RequestHandlers/handle-lobby-requests";
 import { handleJoinQueueCasualRequest, handleJoinQueueRankedRequest } from "../RequestHandlers/handle-queue-requests";
 import { handleMakeBidRequest, handleSubmitClueRequest, handleSubmitGuessRequest } from "../RequestHandlers/handle-game-requests";
 
@@ -86,6 +86,10 @@ export function addListenersForNewConnection(io: socketIO, socket: Socket<Client
     socket.on('submit-guess', (id: string, lobbyID: string, value: string) => {
         handleSubmitGuessRequest(io, socket, id, lobbyID, value)
     });
+    
+    socket.on('disconnect', () => {
+        handleDisconnect(io, socket);
+    })
 }
 
 

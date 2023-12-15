@@ -39,15 +39,13 @@ export function TeamPanel(props: {index: number, team: Team, currentTeamIndex: n
 export function NewTeamPanel(props: {index: number, addTeam: Function}) {
     
     return (
+    <div>
         <FlexBox classes={"flex-column align-items-center new-team rounded"}>
-            <div>
-                Add a team
-            </div>
-            <div className="new-team-plus-button" onClick={() => props.addTeam()}>
-                <FontAwesomeIcon icon={solid("plus")}/>
-            </div>
-            
+        <div>
+            Add a team
+        </div>
         </FlexBox>
+    </div>
     )
 }
 

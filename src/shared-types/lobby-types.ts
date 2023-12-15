@@ -98,7 +98,7 @@ export const defaultLobby = {
         canBeSpectated: LobbySpectateRule.Public
     } as LobbySettings,
     gameSettings: {
-        wordCount: 10,
+        wordCount: 5,
         wordPack: WordPack.Classic,
         guessTime: 120,
         teams: [] as Team[],

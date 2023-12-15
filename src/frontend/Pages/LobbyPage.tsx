@@ -122,9 +122,13 @@ export default function LobbyPage(props: LobbyPageProps) {
                 !hasEmptyTeam && 
                 <FlexBox classes="flex-column justify-content-between align-items-center">
                     <NewTeamPanel index={teams.length} addTeam={clickedAddNewTeam} />
-                    <div className="new-team-plus-button" onClick={() => clickedAddNewTeam()}>
-                        <FontAwesomeIcon icon={solid("plus")}/>
+                    <div>
+                        <br />
+                        <div className="new-team-plus-button" onClick={() => clickedAddNewTeam()}>
+                            <FontAwesomeIcon icon={solid("plus")}/>
+                        </div>
                     </div>
+                    
                 </FlexBox>
                 }
             </FlexBox>

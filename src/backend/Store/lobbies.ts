@@ -112,7 +112,7 @@ let lobbyOneMemberNoTeams:Lobby = {
         canBeSpectated: LobbySpectateRule.Private
     } as LobbySettings,
     gameSettings: {
-        wordCount: 15,
+        wordCount: 5,
         wordPack: WordPack.Classic,
         guessTime: 60,
         teams: [] as Team[],

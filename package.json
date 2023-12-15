@@ -13,6 +13,9 @@
     "tsc": "tsc --build src",
     "webpack": "webpack --config webpack.config.js"
   },
+  "engines": {
+    "node": "15.1.0"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

@@ -10,7 +10,7 @@ import { Provider } from 'react-redux';
 import InfoPanel from './Elements/InfoPanel';
 import Page from './Elements/Page';
 import { createDefaultPlayer, defaultLobby, GameSettings, Lobby, Lounge, Player, PlayerSpeechAction, Team } from '../shared-types/lobby-types';
-import { refreshLobbies } from './Store/Reducers/lobbiesSlice';
+import { refreshLobbies, setRefreshDate } from './Store/Reducers/lobbiesSlice';
 import { generateAccount } from './Store/account';
 import { Account } from '../shared-types/account-types';
 import { GamePhase, GameRole, GameState } from '../shared-types/game-types';
@@ -93,6 +93,7 @@ const handleCreateLobbyFailed = (message: string) => {
 const handleLobbies = (lobbies:Lobby[], setPage: Function) => {
     console.log("Received lobbies");
     store.dispatch(refreshLobbies(lobbies));
+    store.dispatch(setRefreshDate(new Date()));
     setPage(PageType.Lobbies)
 }
 

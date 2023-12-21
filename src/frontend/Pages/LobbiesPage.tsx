@@ -6,7 +6,7 @@ import { useSocketContext } from '../Socket/socket-context';
 import { useSelector } from 'react-redux';
 import { selectLobbySettings } from '../Store/Reducers/lobbySlice';
 import { Account } from '../../shared-types/account-types';
-import { selectLobbies } from '../Store/Reducers/lobbiesSlice';
+import { selectLobbies, selectRefreshDate } from '../Store/Reducers/lobbiesSlice';
 import { Lobby, LobbyPrivacy, LobbySettings } from '../../shared-types/lobby-types';
 import { getAccount } from '../Store/account';
 import FlexBox from '../Elements/FlexBox';
@@ -33,8 +33,6 @@ export default function LobbiesPage(props: SetAppPageProps) {
                 sendJoinLobbyRequest(socket, getAccount(), lobbyID)
             }
         };
-        console.log(selectedLobbyID == "");
-        console.log(lobbySettings.id != "default" ? "join-lobby-button-disabled" : "");
         return(
             <button type="button" className={"big-action-button-slim join-lobby-button " + (selectedLobbyID == "" || lobbySettings.id != "default" ? "join-lobby-button-disabled" : "")} onClick={() => {clickedJoinLobby(selectedLobbyID);}}><FontAwesomeIcon icon={solid("right-to-bracket")} /> Join Lobby</button>
         )
@@ -113,8 +111,8 @@ function lobbiesList(selectedLobbyID: string, setSelectedLobbyID: Function) {
 }
 
 function lastUpdatedAt() {
-    const lobbies : Lobby[] = useSelector(selectLobbies);
+    const refreshDate: Date = useSelector(selectRefreshDate);
     return (
-        <i>Last updated at {(new Date()).toLocaleTimeString()}</i>
+        <i>Last updated at {refreshDate.toLocaleTimeString()}</i>
     )
 }

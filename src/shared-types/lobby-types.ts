@@ -39,7 +39,7 @@ export enum PlayerSpeechAction {
 }
 
 export const defaultPlayer : Player = {
-    account: {username: "", id: ""},
+    account: {username: "", id: "", socketID: ""},
     score: 0,
     ready: false,
     role: GameRole.Crew,

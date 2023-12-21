@@ -87,8 +87,8 @@ export function addListenersForNewConnection(io: socketIO, socket: Socket<Client
         handleSubmitGuessRequest(io, socket, id, lobbyID, value)
     });
     
-    socket.on('disconnect', () => {
-        handleDisconnect(io, socket);
+    socket.on('disconnect', (reason: string) => {
+        handleDisconnect(io, socket, reason);
     })
 }
 

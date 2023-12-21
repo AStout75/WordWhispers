@@ -273,6 +273,37 @@ section {
     background: #FF6F59;
 }
 
+.update-name {
+    gap: 10px;
+    animation-duration: 0.25s;
+    animation-name: animate-pop;
+    animation-timing-function: cubic-bezier(.26, .53, .74, 1.48);
+    animation-fill-mode: forwards;
+    animation-delay: 1s;
+    opacity: 0;
+}
+
+.update-name-input {
+    width: 350px;
+    height: 50px;
+    font-size: 1.5rem;
+    text-align: center;
+}
+
+.name-valid-container > svg{
+    padding: 4px;
+    width: 30px;
+    height: 30px;
+}
+
+.name-valid-container-valid > svg {
+    background: var(--color-important);
+}
+
+.name-valid-container-invalid > svg {
+    background: var(--color-primary);
+}
+
 .return-home-button {
     background: var(--color-primary-deselected);
 }
@@ -379,6 +410,7 @@ section {
 
 .teams-container {
     gap: 10px;
+    min-height: 280px;
 }
 
 .team {
@@ -531,6 +563,7 @@ section {
 
 .lounge {
     width: 100%;
+    min-height: 158px;
     padding: 8px;
     background: var(--color-primary-deselected);
 

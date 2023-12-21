@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import ButtonWithOnClickEvent from '../Elements/ButtonWithOnClickEvent';
 import { sendJoinQueueCasualRequest, sendJoinQueueRankedRequest, sendViewLobbiesRequest } from '../Socket/socket-events';
 import { PageProps, PageType, SetAppPageProps } from '../frontend-types/frontend-types';
@@ -9,15 +9,24 @@ import FlexBox from '../Elements/FlexBox';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { IconDefinition, IconName } from '@fortawesome/fontawesome-svg-core';
+import { getAccount, setAccount } from '../Store/account';
+import { store } from '../Store/store';
+import { updatePlayerAccount } from '../Store/Reducers/playerSlice';
 
 export default function IndexPage(props: SetAppPageProps) {
     const socket = useSocketContext();
+    const [name, setName] = useState(getAccount().username);
+    const validName = name.length >= 3 && name.length <= 16;
     const clickedCustomLobbies = () => {
-        sendViewLobbiesRequest(socket);
+        //sendViewLobbiesRequest(socket);
         props.setPageState(PageType.Lobbies);
     };
     const clickedQueue = () => {
+        //store.dispatch(updatePlayerAccount({ ...getAccount(), username: name }));
+        sendViewLobbiesRequest(socket);
+        setAccount({ ...getAccount(), username: name })
         props.setPageState(PageType.Lobbies);
+        
     };
     const clickedSpectate = () => {
         props.setPageState(PageType.Lobbies);
@@ -43,8 +52,22 @@ export default function IndexPage(props: SetAppPageProps) {
             </section>
             <FlexBox classes={'flex-wrap justify-content-around index-page-buttons-container text-center'}>
                 <IndexPageButton onClick={clickedQueue} wrapperClass={''} buttonClass={'queue-button'} buttonText={'Quick play'} icon={solid("play")} />
-                <IndexPageButton onClick={clickedCustomLobbies} wrapperClass={''} buttonClass={'lobbies-button'} buttonText={'Custom lobbies'} icon={solid("people-group")} />
-                <IndexPageButton onClick={clickedSpectate} wrapperClass={''} buttonClass={'spectate-button'} buttonText={'Spectate'} icon={solid("eye")} />
+                {/*<IndexPageButton onClick={clickedCustomLobbies} wrapperClass={''} buttonClass={'lobbies-button'} buttonText={'Custom lobbies'} icon={solid("people-group")} />
+                <IndexPageButton onClick={clickedSpectate} wrapperClass={''} buttonClass={'spectate-button'} buttonText={'Spectate'} icon={solid("eye")} /> */}
+        </FlexBox>
+            <FlexBox classes="update-name justify-content-center gap-2">
+                <input
+                    type="text"
+                    className="update-name-input rounded"
+                    id="update-name-input"
+                    placeholder={getAccount().username}
+                    maxLength={16}
+                    minLength={3}
+                    onChange={(event) => setName(event.target.value)}
+                />
+                <FlexBox classes={"name-valid-container align-items-center" + (validName ? " name-valid-container-valid" : " name-valid-container-invalid")}>
+                    <FontAwesomeIcon icon={validName ? solid("check") : solid("times")} className="name-valid-icon rounded-circle" />
+                </FlexBox>
             </FlexBox>
            </div>
     )

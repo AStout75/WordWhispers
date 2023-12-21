@@ -280,8 +280,33 @@ export function handleStartGameRequest(io: Server, socket: Socket<ClientToServer
     }
 }
 
-export function handleDisconnect(io: Server, socket: Socket<ClientToServerEvents, ServerToClientEvents>) {
-
+export function handleDisconnect(io: Server, socket: Socket<ClientToServerEvents, ServerToClientEvents>, reason: string) {
+    console.log("Received disconnect request w/ reason", reason);
+    let errorMessage = "Cannot disconnect/";
+    try {
+        Object.keys(lobbies).forEach((lobbyID) => {
+            const lobby = lobbies[lobbyID].lobby;
+            const member = lobby.lobbySettings.members.find((member) => member.socketID === socket.id);
+            if (member) {
+                console.log("found lobby", lobbyID, "with member", socket.id)
+                removeAccountFromLobby(socket, member.id, lobby);
+                io.to(lobbyID).emit('player-left-lobby', member.id); //Inform lobby
+                socket.rooms.forEach((room) => {
+                    socket.leave(room);
+                })
+                if (lobby.lobbySettings.members.length === 0) {
+                    delete lobbies[lobby.lobbySettings.id]
+                }
+            }
+        })
+    }
+    catch (e: unknown) {
+        if (typeof e === "string") {
+            errorMessage += e.toUpperCase() // works, `e` narrowed to string
+        } else if (e instanceof Error) {
+            errorMessage += e.message // works, `e` narrowed to Error
+        }
+    }
 }
 
 // --- UTILS ---

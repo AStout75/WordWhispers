@@ -3,15 +3,19 @@ import { Lobby } from "../../../shared-types/lobby-types";
 
 const lobbiesSlice = createSlice({
     name: 'lobbies',
-    initialState: {val: [] as Lobby[]}, //just couldn't get `initialState: [] as Lobby` to work, it wouldn't recognize reassignments as a state change. Bullshit
+    initialState: {val: [] as Lobby[], refreshDate: new Date()}, // Initialize refreshDate with a new Date object
     reducers: {
-        refreshLobbies(lobbies: {val: Lobby[]}, action: PayloadAction<Lobby[]>) {
+        refreshLobbies: (state, action: PayloadAction<Lobby[]>) => {
             const newLobbies: Lobby[] = action.payload;
-            lobbies.val = [...newLobbies];
+            state.val = [...newLobbies];
+        },
+        setRefreshDate: (state, action: PayloadAction<Date>) => {
+            state.refreshDate = action.payload;
         }
     }
 });
 
-export const { refreshLobbies } = lobbiesSlice.actions;
+export const { refreshLobbies, setRefreshDate } = lobbiesSlice.actions;
 export const selectLobbies = (state: {lobbies: {val: Lobby[]}}) => state.lobbies.val;
+export const selectRefreshDate = (state: {lobbies: {refreshDate: Date}}) => state.lobbies.refreshDate;
 export default lobbiesSlice.reducer;

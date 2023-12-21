@@ -8,27 +8,33 @@ import { LobbyStore } from "../backend-types/backend-types";
 //Delete later.
 let account1:Account = {
     username: "Test account 1",
-    id: "260sdgk32"
+    id: "260sdgk32",
+    socketID: "",
 };
 
 let account2:Account = {
     username: "Test account 2",
-    id: "dbv464635"
+    id: "dbv464635",
+    socketID: "",
 };
 
 let account3:Account = {
     username: "Test account 3",
-    id: "2d999fvmd"
+    id: "2d999fvmd",
+    socketID: "",
+
 };
 
 let account4:Account = {
     username: "Test account 4",
-    id: "cbewetwto"
+    id: "cbewetwto",
+    socketID: "",
 };
 
 let account5:Account = {
     username: "I love napping",
-    id: "napster22"
+    id: "napster22",
+    socketID: "",
 }
 
 let player1:Player = {

@@ -1,14 +1,14 @@
 import { Server, Socket } from "socket.io";
 import { Account } from "../../shared-types/account-types";
 import { GameLogEntry, GamePhase, GameRole, GameState, TeamState, Word, WordVisibility } from "../../shared-types/game-types";
-import { defaultGameState, defaultLobby, defaultPlayer, GameSettings, Lobby, LobbyPhase, Lounge, Player, Team } from "../../shared-types/lobby-types";
+import { defaultGameState, defaultLobby, defaultPlayer, GameSettings, Lobby, LobbyPhase, Lounge, Player, PlayerSpeechAction, Team } from "../../shared-types/lobby-types";
 import { ClientToServerEvents, ServerToClientEvents } from "../../shared-types/socket-types";
 import { LobbyStore } from "../backend-types/backend-types";
 import lobbies, { wordBank } from "../Store/lobbies";
 
 const MAX_PLAYERS_PER_LOBBY:number = 16;
 const DEFAULT_BID:number = 25;
-const DEFAULT_BID_TIME:number = 20000;
+const DEFAULT_BID_TIME:number = 6000;
 const DEFAULT_GUESS_TIME:number = 120000;
 
 export function handleViewLobbiesRequest (io: Server, socket: Socket<ClientToServerEvents, ServerToClientEvents>): void {
@@ -328,23 +328,31 @@ function setGamePhase(io: Server, lobby: Lobby, phase: GamePhase) {
 function endGame(io: Server, lobby: Lobby) {
     console.log("ended the game");
     
-    
-    
     //scoring
     lobby.gameSettings.teams.forEach((team, index) => {
         const won = lobby.gameState.teamStates[index].wordsGuessed.length = lobby.gameSettings.wordCount;
         if (won) {
             team.players.forEach((player) => {
-                player.score += 100; //100 for winning
+                player.score += 10; //10 for winning
+                player.score += lobby.gameState.teamStates[index].currentBid - lobby.gameState.teamStates[index].cluesGiven.length; //1 for each un used clue
             });
         }
-        else {
-            team.players.forEach((player) => {
-                player.ready = false;
-            })
-        }
+        team.players.forEach((player) => {
+            player.score += lobby.gameState.teamStates[index].wordsGuessed.length; //1 for each word guessed
+            io.to(lobby.lobbySettings.id).emit("player-changed-score", player.account.id, player.score);
+            player.ready = false;
+            io.to(lobby.lobbySettings.id).emit("player-changed-ready", player.account.id);
+            player.lastAction = {action: PlayerSpeechAction.None, time: ""};
+        })
+        
         
     })
+    //clear social action
+    lobby.gameSettings.teams.forEach((team) => {
+        team.players.forEach((player) => {
+            
+        })
+    });
     lobby.gameState.phase = GamePhase.End;
     lobby.lobbySettings.phase = LobbyPhase.Waiting;
     io.to(lobby.lobbySettings.id).emit('game-ended');
@@ -485,7 +493,7 @@ function removeAccountFromLobbyTeam(socket: Socket<ClientToServerEvents, ServerT
 // --- GAME UTILS ---
 
 function generateNewGame(settings: GameSettings): GameState {
-    let state = {...defaultLobby.gameState};
+    let state = {...defaultLobby.gameState, words: [] as Word[], teamStates: [] as TeamState[]};
     state.phase = GamePhase.Bid;
     state.timer = Date.now() + DEFAULT_BID_TIME
     let chosenWords: string[] = [];
@@ -507,6 +515,5 @@ function generateNewGame(settings: GameSettings): GameState {
             log: [] as GameLogEntry[]
         } as TeamState
     })
-    console.log("new state: ", state)
     return state;
 }

@@ -93,7 +93,7 @@ const handleCreateLobbyFailed = (message: string) => {
 const handleLobbies = (lobbies:Lobby[], setPage: Function) => {
     console.log("Received lobbies");
     store.dispatch(refreshLobbies(lobbies));
-    store.dispatch(setRefreshDate(new Date()));
+    store.dispatch(setRefreshDate(new Date().toLocaleTimeString()));
     setPage(PageType.Lobbies)
 }
 
@@ -209,6 +209,12 @@ const handleGuessingStarted = () => {
 const handleGameEnded = () => {
     console.log("Received game ended");
     store.dispatch(setGamePhase(GamePhase.End));
+    //clear the playerLastAction of every player in the lobby
+    store.getState().lobby.gameSettings.teams.forEach((team, index) => {
+        team.players.forEach(player => {
+            store.dispatch(setPlayerLastAction({id: player.account.id, location: index, action: PlayerSpeechAction.None}));
+        });
+    })
 }
 
 /* --- --- JOIN TEAMS OR LOUNGE --- */

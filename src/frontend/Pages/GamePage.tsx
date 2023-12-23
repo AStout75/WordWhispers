@@ -200,7 +200,7 @@ function LogEntry(props: {entry: GameLogEntry}) {
             <hr />
             <div>
                 <div className="log-entry-img-container d-inline-block">
-                    <img src={props.entry.type == GameLogEntryType.Clue ? wizard : knight} />
+                    <img src={(props.entry.type == GameLogEntryType.Clue || props.entry.type == GameLogEntryType.Bid) ? wizard : knight} />
                 </div>
                 <div className="d-inline-block log-entry-origin">{props.entry.origin.username}</div>
             </div>
@@ -218,7 +218,6 @@ function GameBidPanel(props: {onSubmit: Function, currentTeamIndex: number}) {
         if (value > 1) {
             setValue(value - 1);
         }
-        
     }
     const incrementOne = () => {
         if (value < 50) {
@@ -258,12 +257,12 @@ function GameBidPanel(props: {onSubmit: Function, currentTeamIndex: number}) {
 function GameBidPanelTeams(props: {currentTeamIndex: number}) {
     const gameState: GameState = useSelector(selectGameState);
     return(
-        <FlexBox classes="game-bid-teams-container justify-content-between">
+        <FlexBox classes="game-bid-teams-container justify-content-center">
         {gameState.teamStates.map( (state, index) => {
             return (
-                <FlexBox classes={"flex-column justify-content-between align-items-center game-bid-team-bid-container"}>
-                    <div className={"game-bid-team-bid " + (index == props.currentTeamIndex ? "own-team-bid" : "")}>{state.currentBid}</div>
-                    <div>Team {index + 1}</div>
+                <FlexBox classes={"flex-column justify-content-center mx-auto align-items-center game-bid-team-bid-container " + (index == props.currentTeamIndex ? "own-team-game-bid-team-bid-container" : "")}>
+                    <div className="game-bid-team-bid rounded">{state.currentBid}</div>
+                    <div className={"game-bid-team-number rounded " + (index == props.currentTeamIndex ? "own-team-bid" : "")}>Team {index + 1}</div>
                 </FlexBox>
                 
             )

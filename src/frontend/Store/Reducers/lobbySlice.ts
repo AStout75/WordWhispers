@@ -161,6 +161,7 @@ const lobbySlice = createSlice({
         },
 
         setBid(lobby, action: PayloadAction<{account: Account, teamIndex: number, bid: number}>) {
+            lobby.gameState.teamStates[action.payload.teamIndex].log = [...lobby.gameState.teamStates[action.payload.teamIndex].log, {value: action.payload.bid.toString(), type: GameLogEntryType.Bid, origin: action.payload.account} as GameLogEntry]
             lobby.gameState.teamStates[action.payload.teamIndex].currentBid = action.payload.bid;
         },
 

@@ -14,7 +14,7 @@ export function handleMakeBidRequest (io: Server, socket: Socket<ClientToServerE
     }
     const location : number | string = lobbies[lobby.lobbySettings.id].locations[id];
     if (location == "lounge") {
-        throw new Error("Player submitted clue from lounge" + lobbyID + " player id " + id);
+        throw new Error("Player submitted bid from lounge" + lobbyID + " player id " + id);
     }
     io.to(lobbyID).emit("player-made-bid", id, value);
 }
@@ -29,6 +29,13 @@ export function handleSubmitClueRequest (io: Server, socket: Socket<ClientToServ
     if (location == "lounge") {
         throw new Error("Player submitted clue from lounge" + lobbyID + " player id " + id);
     }
+    const splitBySpace = value.split(" ");
+    if (lobbies[lobbyID].lobby.gameState.teamStates[location as number].cluesGiven.length + splitBySpace.length > lobbies[lobbyID].lobby.gameState.teamStates[location as number].currentBid) {
+        throw new Error("Player submitted too many clues" + lobbyID + " player id " + id);
+    }
+    splitBySpace.forEach((word) => {
+        lobbies[lobbyID].lobby.gameState.teamStates[location as number].cluesGiven.push(word);
+    })
     io.to(lobbyID + "-team" + location).emit("player-gave-clue", id, value);
     io.to(lobbyID).emit("player-gave-clue-social", id);
 }
@@ -40,21 +47,18 @@ export function handleSubmitGuessRequest (io: Server, socket: Socket<ClientToSer
         throw new Error('Lobby with specified ID doesnt exist:' + lobbyID);
     }
     const location : number | string = lobbies[lobby.lobbySettings.id].locations[id];
-    console.log(lobbies[lobby.lobbySettings.id].locations);
     if (location == "lounge") {
         throw new Error("Player submitted guess from lounge" + lobbyID + " player id " + id);
     }
     var hit = false;
     var wordIndex = -1;
     for (var i = 0; i < lobbies[lobbyID].lobby.gameState.words.length; i++) {
-        console.log(lobbies[lobbyID].lobby.gameState.words[i].word, value);
         if (value.toUpperCase() == lobbies[lobbyID].lobby.gameState.words[i].word) {
             hit = true;
             wordIndex = i;
             break;
         }
     }
-    console.log(lobbyID + "-team" + location);
     io.to(lobbyID + "-team" + location).emit("player-gave-guess", id, value, wordIndex, hit);
     if (hit) {io.to(lobbyID).emit("player-gave-guess-hit-social", id)}
     else {io.to(lobbyID).emit("player-gave-guess-miss-social", id)};

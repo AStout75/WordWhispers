@@ -103,7 +103,7 @@ export default function LobbyPage(props: LobbyPageProps) {
                 <button type="button" className={"ready-button" + (player.ready ? " ready-button-depressed" : "")} onClick={() => clickedChangeReady()}>{player.ready ? "Ready!" : "Ready up"}</button>
             </FlexBox>
             <FancyHRTitle text={"Join a team"} titleClass={""} />
-            <FlexBox classes={'flex-wrap mb-3 teams-container'}>
+            <FlexBox classes={'flex-wrap teams-container'}>
                 {teams.map( (team, index) => {
                     return(
                         <FlexBox classes="flex-column justify-content-between align-items-center">
@@ -111,7 +111,6 @@ export default function LobbyPage(props: LobbyPageProps) {
                             {
                                 index != currentTeamIndex &&
                                 <div>
-                                    <br />
                                     <ButtonWithOnClickEvent disabled={false} onClick={() => {clickedJoinTeam(index)}} wrapperClass={''} buttonClass={'join-team-button ' + (index == currentTeamIndex ? 'button-disabled' : '')} buttonText={index == currentTeamIndex ? "You are on this team" : 'Join this team'} />
                                 </div>
                             }
@@ -123,7 +122,6 @@ export default function LobbyPage(props: LobbyPageProps) {
                 <FlexBox classes="flex-column justify-content-between align-items-center">
                     <NewTeamPanel index={teams.length} addTeam={clickedAddNewTeam} />
                     <div>
-                        <br />
                         <div className="new-team-plus-button" onClick={() => clickedAddNewTeam()}>
                             <FontAwesomeIcon icon={solid("plus")}/>
                         </div>
@@ -133,7 +131,7 @@ export default function LobbyPage(props: LobbyPageProps) {
                 }
             </FlexBox>
             <FancyHRTitle text={"Spectate or go AFK"} titleClass={""} />
-            <div className="mb-3 text-center">
+            <div className="text-center">
                 <div>
                     <LoungePanel currentTeamIndex={currentTeamIndex}/>
                 </div>

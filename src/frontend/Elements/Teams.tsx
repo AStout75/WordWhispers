@@ -15,7 +15,7 @@ import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 export function TeamPanel(props: {index: number, team: Team, currentTeamIndex: number, deleteTeam: Function}) {
     const empty = props.team.players.length == 0;
     return (
-        <FlexBox classes={"flex-column align-items-center team " + (props.index == props.currentTeamIndex ? "team-own-team " : "") + "rounded"}>
+        <FlexBox classes={"flex-column align-items-center " + (empty ? "empty-team " : "") + "team mb-2 " + (props.index == props.currentTeamIndex ? "team-own-team " : "") + "rounded"}>
             <div>
                 Team {props.index + 1}
             </div>
@@ -40,7 +40,7 @@ export function NewTeamPanel(props: {index: number, addTeam: Function}) {
     
     return (
     <div>
-        <FlexBox classes={"flex-column align-items-center new-team rounded"}>
+        <FlexBox classes={"flex-column align-items-center new-team rounded mb-2"}>
         <div>
             Add a team
         </div>

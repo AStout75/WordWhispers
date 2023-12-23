@@ -27,7 +27,7 @@ export interface GameReadyStatus {
 }
 
 export enum GameLogEntryType {
-    Miss = "miss", Hit = "hit", Clue = "clue", Update = "update"
+    Bid = "bid", Miss = "miss", Hit = "hit", Clue = "clue", Update = "update"
 }
 
 export interface GameLogEntry {

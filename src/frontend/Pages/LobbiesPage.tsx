@@ -111,8 +111,8 @@ function lobbiesList(selectedLobbyID: string, setSelectedLobbyID: Function) {
 }
 
 function lastUpdatedAt() {
-    const refreshDate: Date = useSelector(selectRefreshDate);
+    const refreshDate: string = useSelector(selectRefreshDate);
     return (
-        <i>Last updated at {refreshDate.toLocaleTimeString()}</i>
+        <i>Last updated at {refreshDate}</i>
     )
 }

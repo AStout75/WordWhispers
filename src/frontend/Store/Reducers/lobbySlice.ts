@@ -8,9 +8,9 @@ const lobbySlice = createSlice({
     initialState: {...defaultLobby},
     reducers: {
         resetLobby(lobby) {
-            lobby.lobbySettings = defaultLobby.lobbySettings;
-            lobby.gameSettings = defaultLobby.gameSettings;
-            lobby.gameState = defaultLobby.gameState;//{...defaultLobby};
+            lobby.lobbySettings = JSON.parse(JSON.stringify(defaultLobby.lobbySettings));
+            lobby.gameSettings = JSON.parse(JSON.stringify(defaultLobby.gameSettings));
+            lobby.gameState = JSON.parse(JSON.stringify(defaultLobby.gameState));
         },
         refreshLobbySettings(lobby, action: PayloadAction<LobbySettings>) {
             lobby.lobbySettings = action.payload;

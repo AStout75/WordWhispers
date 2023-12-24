@@ -149,7 +149,7 @@ let lobbyThreeMembersTwoTeams:Lobby = {
     gameSettings: {
         wordCount: 5,
         wordPack: WordPack.Classic,
-        guessTime: 2,
+        guessTime: 30,
         teams: [team1, team2] as Team[],
         lounge: lounge,
         ready: {

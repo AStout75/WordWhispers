@@ -8,7 +8,7 @@ import lobbies, { wordBank } from "../Store/lobbies";
 
 const MAX_PLAYERS_PER_LOBBY:number = 16;
 const DEFAULT_BID:number = 25;
-const DEFAULT_BID_TIME:number = 6000;
+const DEFAULT_BID_TIME:number = 10000;
 const DEFAULT_GUESS_TIME:number = 120000;
 
 export function handleViewLobbiesRequest (io: Server, socket: Socket<ClientToServerEvents, ServerToClientEvents>): void {
@@ -24,7 +24,7 @@ export function handleCreateLobbyRequest (io: Server, socket: Socket<ClientToSer
     console.log("create lobby requested by", account);
     let errorMessage = "Cannot create lobby";
     try {
-        let lobby:Lobby = {...defaultLobby};
+        let lobby:Lobby = JSON.parse(JSON.stringify(defaultLobby));
         lobby.lobbySettings.id = Date.now().toString();
         lobby.lobbySettings.owner = account;
         lobbies[lobby.lobbySettings.id] = {lobby: lobby, locations: {}};
@@ -76,12 +76,12 @@ export function handleLeaveLobbyRequest (io: Server, socket: Socket<ClientToServ
             throw new Error('Lobby with specified ID doesnt exist:' + lobbyID);
         }
         removeAccountFromLobby(socket, id, lobby);
-        
-        socket.emit('leave-lobby-success'); //Inform player leave succeeded
-        io.to(lobbyID).except(socket.id).emit('player-left-lobby', id); //Inform lobby
         socket.rooms.forEach((room) => {
             socket.leave(room);
         })
+        socket.emit('leave-lobby-success'); //Inform player leave succeeded
+        io.to(lobbyID).except(socket.id).emit('player-left-lobby', id); //Inform lobby
+        
         if (lobby.lobbySettings.members.length == 0) {
             delete lobbies[lobby.lobbySettings.id]
         }
@@ -265,6 +265,7 @@ export function handleStartGameRequest(io: Server, socket: Socket<ClientToServer
         hiddenGameState.words = hiddenGameState.words.map(() => {return {word: "???"} as Word});
         lobby.gameState = visibleGameState;
         lobby.lobbySettings.phase = LobbyPhase.Game;
+        console.log(io.in(lobby.lobbySettings.id + "-visible"))
         io.to(lobby.lobbySettings.id + "-visible").emit('game-started', visibleGameState); //Give players game data
         //console.log("Just sent visiblegamestate", visibleGameState, "and hidden game state", hiddenGameState)
         io.to(lobby.lobbySettings.id + "-hidden").emit('game-started', hiddenGameState); //Give players game data
@@ -327,35 +328,30 @@ function setGamePhase(io: Server, lobby: Lobby, phase: GamePhase) {
 
 function endGame(io: Server, lobby: Lobby) {
     console.log("ended the game");
-    
+    console.log("team states", lobby.gameState.teamStates);
     //scoring
+    
     lobby.gameSettings.teams.forEach((team, index) => {
-        const won = lobby.gameState.teamStates[index].wordsGuessed.length = lobby.gameSettings.wordCount;
+        let totalPoints = 0;
+        const won = lobby.gameState.teamStates[index].wordsGuessed.length == lobby.gameSettings.wordCount;
         if (won) {
-            team.players.forEach((player) => {
-                player.score += 10; //10 for winning
-                player.score += lobby.gameState.teamStates[index].currentBid - lobby.gameState.teamStates[index].cluesGiven.length; //1 for each un used clue
-            });
+            totalPoints += 3 * (25 - lobby.gameState.teamStates[index].currentBid)
+            totalPoints += lobby.gameState.teamStates[index].currentBid - lobby.gameState.teamStates[index].cluesGiven.length; //1 for each un used clue
         }
+        totalPoints += lobby.gameState.teamStates[index].wordsGuessed.length * 2; //1 for each word guessed
+        team.score += totalPoints;
+        console.log("Total opitns for team", index, "is", totalPoints, "and they won?", won, "with bid", lobby.gameState.teamStates[index].currentBid, "and clues given", lobby.gameState.teamStates[index].cluesGiven.length, "and words guessed", lobby.gameState.teamStates[index].wordsGuessed.length);
         team.players.forEach((player) => {
-            player.score += lobby.gameState.teamStates[index].wordsGuessed.length; //1 for each word guessed
-            io.to(lobby.lobbySettings.id).emit("player-changed-score", player.account.id, player.score);
+            player.score += totalPoints;
             player.ready = false;
+            io.to(lobby.lobbySettings.id).emit("player-changed-score", player.account.id, player.score);
             io.to(lobby.lobbySettings.id).emit("player-changed-ready", player.account.id);
             player.lastAction = {action: PlayerSpeechAction.None, time: ""};
-        })
-        
-        
-    })
-    //clear social action
-    lobby.gameSettings.teams.forEach((team) => {
-        team.players.forEach((player) => {
-            
-        })
+        });
     });
     lobby.gameState.phase = GamePhase.End;
     lobby.lobbySettings.phase = LobbyPhase.Waiting;
-    io.to(lobby.lobbySettings.id).emit('game-ended');
+    io.to(lobby.lobbySettings.id).emit('game-ended', lobby.gameState, lobby.gameSettings.teams);
 }
 
 /**
@@ -407,6 +403,10 @@ function addPlayerToLocation(socket: Socket<ClientToServerEvents, ServerToClient
 }
 
 function addPlayerToLounge(socket: Socket<ClientToServerEvents, ServerToClientEvents>, lobby: Lobby, player: Player) {
+    
+    console.log("Leaving -team-", lobbies[lobby.lobbySettings.id].locations[player.account.id])
+    socket.leave(lobby.lobbySettings.id + "-team" + lobbies[lobby.lobbySettings.id].locations[player.account.id]);
+    socket.leave(lobby.lobbySettings.id + "-visible")
     lobbies[lobby.lobbySettings.id].locations[player.account.id] = "lounge";
     lobby.gameSettings.lounge.players.push(player);
     socket.join(lobby.lobbySettings.id + "-lounge");
@@ -422,7 +422,11 @@ function addPlayerToTeamIndex(socket: Socket<ClientToServerEvents, ServerToClien
     }
     
     lobby.gameSettings.teams[index].players.push(player);
+    socket.leave(lobby.lobbySettings.id + "-team" + lobbies[lobby.lobbySettings.id].locations[player.account.id]);
+    console.log("leaving -team-", lobbies[lobby.lobbySettings.id].locations[player.account.id]);
+    socket.leave(lobby.lobbySettings.id + "-lounge")
     lobbies[lobby.lobbySettings.id].locations[player.account.id] = index;
+    
     socket.join(lobby.lobbySettings.id + "-team" + index)
 
 }
@@ -493,7 +497,7 @@ function removeAccountFromLobbyTeam(socket: Socket<ClientToServerEvents, ServerT
 // --- GAME UTILS ---
 
 function generateNewGame(settings: GameSettings): GameState {
-    let state = {...defaultLobby.gameState, words: [] as Word[], teamStates: [] as TeamState[]};
+    let state = JSON.parse(JSON.stringify(defaultLobby.gameState)) as GameState;
     state.phase = GamePhase.Bid;
     state.timer = Date.now() + DEFAULT_BID_TIME
     let chosenWords: string[] = [];
@@ -515,5 +519,6 @@ function generateNewGame(settings: GameSettings): GameState {
             log: [] as GameLogEntry[]
         } as TeamState
     })
+    console.log("Here", state.teamStates)
     return state;
 }

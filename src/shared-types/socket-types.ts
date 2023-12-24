@@ -1,5 +1,5 @@
 import { Account } from "./account-types";
-import { GameRole, GameState } from "./game-types";
+import { GameRole, GameState, TeamState } from "./game-types";
 import { GameSettings, Lobby, Player, Team } from "./lobby-types";
 
 export interface ServerToClientEvents {
@@ -23,7 +23,7 @@ export interface ServerToClientEvents {
 
     "game-started": (game: GameState) => void;
     "guessing-started": () => void;
-    "game-ended": () => void;
+    "game-ended": (game: GameState, teams: Team []) => void;
 
     "player-made-bid": (id: string, value: number) => void;
     "player-gave-clue": (id: string, value: string) => void;
@@ -44,6 +44,10 @@ export interface ServerToClientEvents {
     "start-game-failed": (message: string) => void;
     "add-team-failed": (message: string) => void;
     "delete-team-failed": (message: string) => void;
+    "player-made-bid-failed": (message: string) => void;
+    "player-gave-clue-failed": (message: string) => void;
+    "player-gave-guess-failed": (message: string) => void;
+
 
     }
     

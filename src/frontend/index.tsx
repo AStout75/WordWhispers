@@ -13,7 +13,7 @@ import { createDefaultPlayer, defaultLobby, GameSettings, Lobby, Lounge, Player,
 import { refreshLobbies, setRefreshDate } from './Store/Reducers/lobbiesSlice';
 import { generateAccount } from './Store/account';
 import { Account } from '../shared-types/account-types';
-import { GamePhase, GameRole, GameState } from '../shared-types/game-types';
+import { GamePhase, GameRole, GameState, TeamState } from '../shared-types/game-types';
 import { resetPlayer, toggleLocalPlayerReady, updatePlayerRole, updatePlayerScore } from './Store/Reducers/playerSlice';
 
 function App() {
@@ -37,7 +37,7 @@ function App() {
 
         socket.on('game-started', (game: GameState) => {handleGameStarted(game, setPage)});
         socket.on('guessing-started', () => {handleGuessingStarted()});
-        socket.on('game-ended', () => {handleGameEnded()});
+        socket.on('game-ended', (game: GameState, teams: Team []) => {handleGameEnded(game, teams)});
 
         socket.on('create-lobby-failed', (message: string) => handleCreateLobbyFailed(message))
         socket.on('join-lobby-failed', (message: string) => {handleJoinLobbyFailed(message)});
@@ -206,9 +206,15 @@ const handleGuessingStarted = () => {
     store.dispatch(setGamePhase(GamePhase.Guess));
 };
 
-const handleGameEnded = () => {
+const handleGameEnded = (gameState: GameState, teams: Team []) => {
     console.log("Received game ended");
+    console.log(gameState)
     store.dispatch(setGamePhase(GamePhase.End));
+    gameState.words.forEach((word, index) => {
+        word.visibility = store.getState().lobby.gameState.words[index].visibility;
+    })
+    store.dispatch(refreshGameState(gameState));
+    store.dispatch(refreshTeams(teams));
     //clear the playerLastAction of every player in the lobby
     store.getState().lobby.gameSettings.teams.forEach((team, index) => {
         team.players.forEach(player => {

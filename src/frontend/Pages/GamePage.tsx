@@ -111,7 +111,6 @@ function GameWordsPanel(props: {currentTeamIndex: number}) {
     return (
         <FlexBox classes="flex-wrap align-items-center justify-content-center">
             {gameWords.map( (word, index) => {
-                
                 return (
                     <WordBox word={word} visible={word.visibility == WordVisibility.Visible ? true : false /*gameState.teamStates[props.currentTeamIndex].wordsGuessed.includes(word.word)*/} index={index} />
                 )
@@ -168,10 +167,51 @@ function GameInputPanel(props: {giveGuessOrClue: Function, makeBid: Function, ba
 }
 
 function GameSummaryPanel(props: {backToLobby: Function}) {
+    const gameState: GameState = useSelector(selectGameState);
+    
     return (
-        <FlexBox classes={"justify-content-center align-items-center"}>
-            <div className="big-action-button-slim continue-button" onClick={() => props.backToLobby()}>Continue</div>
-        </FlexBox>
+        <div>
+            <h3 className="text-center">Game Summary</h3>
+            <FlexBox classes={"justify-content-center align-items-center flex-wrap"}>
+            {gameState.teamStates.map((teamState, index) => {
+                console.log(teamState, gameState.words)
+                let totalPoints = 0;
+                totalPoints += teamState.wordsGuessed.length * 2;
+                if (teamState.wordsGuessed.length == gameState.words.length) {
+                    totalPoints += 3 * (25 - teamState.currentBid);
+                    totalPoints += teamState.currentBid - teamState.cluesGiven.length;
+                }
+                return <FlexBox classes="team-score-summary">
+                    <div className="team-summary-number rounded text-center">Team {index + 1}</div>
+                    <FlexBox classes={"justify-content-between"}>
+                        <div className="game-summary-text rounded mr-2">Found {teamState.wordsGuessed.length == gameState.words.length ? "all the" : teamState.wordsGuessed.length} words</div>
+                        <div className="game-summary-points rounded">+ {teamState.wordsGuessed.length * 2} points</div>
+                    </FlexBox>
+                    {teamState.wordsGuessed.length == gameState.words.length && 
+                    <div>
+                        <FlexBox classes={"justify-content-between"}>
+                            <div className="game-summary-text rounded mr-2">Bid {teamState.currentBid} clues</div>
+                            <div className="game-summary-points rounded">+ {3 * (25 - teamState.currentBid)} points</div>
+                        </FlexBox>
+                        <FlexBox classes={"justify-content-between"}>
+                            <div className="game-summary-text rounded mr-2">{teamState.currentBid - teamState.cluesGiven.length} clues unused</div>
+                            <div className="game-summary-points rounded">+ {teamState.currentBid - teamState.cluesGiven.length} points</div>
+                        </FlexBox>
+                    </div>
+                    }
+                    <FlexBox classes={"justify-content-between gap-2"}>
+                        <div className="game-summary-text rounded mr-2">Total</div>
+                        <div className="game-summary-points rounded">+ {totalPoints} points</div>
+                    </FlexBox>
+                </FlexBox>
+            })}
+            </FlexBox>
+            <br />
+            <FlexBox classes={"justify-content-center align-items-center"}>
+                <div className="big-action-button-slim continue-button" onClick={() => props.backToLobby()}>Continue</div>
+            </FlexBox>
+        </div>
+        
         
     )
 }

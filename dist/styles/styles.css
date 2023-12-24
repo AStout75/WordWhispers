@@ -280,7 +280,7 @@ section {
 }
 
 .update-name-input {
-  width: 350px;
+  width: 275px;
   height: 50px;
   font-size: 1.5rem;
   text-align: center;
@@ -785,6 +785,10 @@ input[type=number] {
 .game-log-panel {
   height: 200px;
   overflow-y: scroll;
+}
+
+.team-score-summary {
+  margin: 5px;
 }
 
 /* ===== Scrollbar CSS ===== */

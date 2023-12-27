@@ -230,8 +230,10 @@ export function handleDisconnect(io: Server, socket: Socket<ClientToServerEvents
 // --- UTILS ---
 
 function setGamePhase(io: Server, lobby: Lobby, phase: GamePhase) {
-    if (!(lobby.lobbySettings.id in lobbies))
+    if (!(lobby.lobbySettings.id in lobbies)) {
         console.error("Lobby " + lobby.lobbySettings.id + " doesn't exist")//throw new Error("Lobby " + lobby.lobbySettings.id + " doesn't exist")
+        return
+    }
     lobby.gameState.phase = phase
     if (phase == GamePhase.Guess) {
         io.to(lobby.lobbySettings.id).emit('guessing-started')
@@ -244,9 +246,10 @@ function setGamePhase(io: Server, lobby: Lobby, phase: GamePhase) {
 
 function endGame(io: Server, lobby: Lobby) {
     const connectedSocketIDs = io.sockets.adapter.rooms.get(lobby.lobbySettings.id)
-    if (!connectedSocketIDs)
-        throw new Error("Couldn't get connected sockets for " + lobby.lobbySettings.id)
-
+    if (!connectedSocketIDs) {
+        console.error("Couldn't get connected sockets for " + lobby.lobbySettings.id)//throw new Error("Couldn't get connected sockets for " + lobby.lobbySettings.id)
+        return
+    }
     lobby.gameSettings.teams.forEach((team, index) => { //Scoring
         let totalPoints = 0
         const won = lobby.gameState.teamStates[index].wordsGuessed.length == lobby.gameSettings.wordCount

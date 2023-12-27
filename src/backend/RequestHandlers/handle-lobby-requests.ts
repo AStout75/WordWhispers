@@ -231,7 +231,7 @@ export function handleDisconnect(io: Server, socket: Socket<ClientToServerEvents
 
 function setGamePhase(io: Server, lobby: Lobby, phase: GamePhase) {
     if (!(lobby.lobbySettings.id in lobbies))
-        throw new Error("Lobby " + lobby.lobbySettings.id + " doesn't exist")
+        console.error("Lobby " + lobby.lobbySettings.id + " doesn't exist")//throw new Error("Lobby " + lobby.lobbySettings.id + " doesn't exist")
     lobby.gameState.phase = phase
     if (phase == GamePhase.Guess) {
         io.to(lobby.lobbySettings.id).emit('guessing-started')

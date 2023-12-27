@@ -761,10 +761,12 @@ input[type=number] {
 
 .make-bid-button {
     background: var(--color-primary);
+    color: black;
     padding: 5px;
     font-size: 1rem;
     text-transform: uppercase;
     transition: 0.3s all;
+    
 }
 
 .make-bid-button:hover {
@@ -931,6 +933,7 @@ form {
 
 .give-guess-or-clue-button {
     background: var(--color-primary);
+    color: black;
     padding: 5px;
     font-size: 1.5rem;
     text-transform: uppercase;

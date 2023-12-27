@@ -48,6 +48,11 @@ export default function GamePage(props: SetAppPageProps) {
         else {
             sendGiveGuessRequest(socket, getAccount().id, lobbySettings.id, value);
         }
+        //Also, clear the input
+        const wordInput = document.getElementById("word-input") as HTMLInputElement;
+        if (wordInput) {
+            wordInput.value = "";
+        }
     };
 
     const makeBid = (value: any) => {
@@ -252,7 +257,7 @@ function LogEntry(props: {entry: GameLogEntry}) {
 
 function GameBidPanel(props: {onSubmit: Function, currentTeamIndex: number}) {
     const player = useSelector(selectPlayer);
-    const [value, setValue] = useState(10);
+    const [value, setValue] = useState(25);
     var input = () => {
         return(<input className="game-bid-input" id="bid-input" value={value} readOnly type="number" max="50" min="1" />)
     }
@@ -319,7 +324,7 @@ function GameGuessOrCluePanel(props: {onSubmit: Function}) {
     return (
         <FlexBox classes="game-input-container align-items-stretch rounded flex-wrap">
             <form className="d-flex align-items-center justify-content-center flex-wrap" onSubmit={function(event) {event.preventDefault(); props.onSubmit(event)}}>
-                <input className="game-input" id="word-input" maxLength={25} />
+                <input className="game-input" id="word-input" maxLength={32} autoFocus />
                 <input type="submit" className="give-guess-or-clue-button" value={player.role == GameRole.Captain ? "Give Clue" : "Make Guess"} />
             </form>
         </FlexBox>

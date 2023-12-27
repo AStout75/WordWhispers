@@ -35,19 +35,19 @@ export interface ServerToClientEvents {
     "player-gave-guess-miss-social": (id: string) => void;
 
     //Failures. Respond only to sender
+    "view-lobbies-failed": (message: string) => void;
     "create-lobby-failed": (message: string) => void;
     "join-lobby-failed": (message: string) => void;
     "leave-lobby-failed": (message: string) => void;
     "change-location-failed": (message: string) => void;
     "change-role-failed": (message: string) => void;
     "change-ready-failed": (message: string) => void;
-    "start-game-failed": (message: string) => void;
     "add-team-failed": (message: string) => void;
     "delete-team-failed": (message: string) => void;
+    "start-game-failed": (message: string) => void;
     "player-made-bid-failed": (message: string) => void;
     "player-gave-clue-failed": (message: string) => void;
     "player-gave-guess-failed": (message: string) => void;
-
 
     }
     

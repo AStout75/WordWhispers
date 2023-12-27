@@ -11,7 +11,7 @@ export function sendViewLobbiesRequest (socket: Socket<ServerToClientEvents, Cli
 }
 
 export function sendCreateLobbyRequest (socket: Socket<ServerToClientEvents, ClientToServerEvents>, account: Account): void {
-    console.log("Sent create lobby request w/", account);
+    console.log("Sent create lobby request w/", account.id);
     socket.emit('create-lobby', account);
 }
 

@@ -66,7 +66,6 @@ export default function LobbyPage(props: LobbyPageProps) {
     const clickedDeleteTeam = (index: number) => {
         sendDeleteTeamRequest(socket, getAccount().id, lobbySettings.id, index);
     }
-
     const clickedStartGame = () => {
         sendStartGameRequest(socket, getAccount().id, lobbySettings.id);
     };
@@ -106,7 +105,7 @@ export default function LobbyPage(props: LobbyPageProps) {
             <FlexBox classes={'flex-wrap teams-container'}>
                 {teams.map( (team, index) => {
                     return(
-                        <FlexBox classes="flex-column justify-content-between align-items-center">
+                        <FlexBox classes="flex-column justify-content-between align-items-center" key={"team-" + index}>
                             <TeamPanel index={index} team={team} currentTeamIndex={currentTeamIndex} deleteTeam={clickedDeleteTeam}/>
                             {
                                 index != currentTeamIndex &&
@@ -165,7 +164,7 @@ function LoungePanel(props: {currentTeamIndex: number}) {
             </div>
             <FlexBox classes="justify-content-start flex-wrap">
                 {lounge.players.map( (player) => {
-                    return <Avatar player={player} />
+                    return <Avatar player={player} key={"avatar-" + player.account.id} />
                 })}
             </FlexBox>
         </FlexBox>
@@ -182,50 +181,9 @@ function ChangeRoleButton(props: ChangeRoleButtonProps) {
     return (
         <div className={"change-role-button-container mr-1" + (player.role == props.role ? " change-role-button-selected": "")} onClick={() => {props.onClick()}}>
             <label>
-                <input type="radio" checked={player.role == props.role ? true : false} className={"change-role-button"} />
+                <input type="radio" defaultChecked={player.role == props.role ? true : false} className={"change-role-button"} />
                 <img src={props.role == GameRole.Captain ? wizard : knight} />
             </label>
-            
         </div>
     )
 }
-
-/* Change role butotn used to have <FontAwesomeIcon icon={props.icon} /></input> as  achild element. NOt sure how to fix without react error. */
-
-/*const x = () => {
-    return (
-        <div>
-            You're in lobby: {lobbySettings.id} which is in phase {lobbySettings.phase} and has members: <br />
-            {lobbySettings.members.map( (account) => {
-                return (
-                    <div key={account.id}>{account.username} who has ID: {account.id}</div>
-                )
-            })}
-            <br />
-            Select role
-            <ButtonWithOnClickEvent onClick={() => clickedChangeRole(GameRole.Captain)} wrapperClass={''} buttonClass={player.role == GameRole.Captain ? 'disabled' : 'enabled'} buttonText={'Im the captain now'} />
-            <ButtonWithOnClickEvent onClick={() => clickedChangeRole(GameRole.Crew)} wrapperClass={''} buttonClass={player.role == GameRole.Crew ? 'disabled' : 'enabled'} buttonText={'Yer quarters be below deck, there be only hardtack fer rations'} />
-            <hr />
-            Ready up
-            <ButtonWithOnClickEvent onClick={clickedChangeReady} wrapperClass={''} buttonClass={'enabled'} buttonText={player.ready ? "un-ready" : "ready up"} />
-            The teams are
-            {teams.map( (team, index) => {
-                return(<TeamElement currentTeamIndex={currentTeamIndex} key={index} team={team} index={index} />)
-            })}
-            <br />
-            Lounge
-            {gameSettings.lounge.players.map( (player) => {
-                return (
-                    <div key={player.account.id}>{player.account.username}:{player.role}:{player.ready + ""}:{player.score}</div>
-                )
-            })}
-            {
-                currentTeamIndex != -1 &&
-                <ButtonWithOnClickEvent onClick={clickedJoinLounge} wrapperClass={''} buttonClass={'enabled'} buttonText={'Join the lounge'} />
-            }
-            <ButtonWithOnClickEvent onClick={clickedStartGame} wrapperClass={''} buttonClass={'enabled big'} buttonText={'Start game'} />
-            <hr />
-                <ButtonWithOnClickEvent onClick={clickedLeaveLobby} wrapperClass={''} buttonClass={''} buttonText={'Leave lobby, return to index'} />
-        </div>
-    )
-} */

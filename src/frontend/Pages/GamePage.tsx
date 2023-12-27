@@ -92,8 +92,8 @@ function GameMainPanel(props: {giveGuessOrClue: Function, makeBid: Function, bac
 
 
 function GameStatusBar(props: {currentTeamIndex: number}) {
-    const gameState : GameState = useSelector(selectGameState);
-    const player : Player = useSelector(selectPlayer);
+    const gameState : GameState = useSelector(selectGameState)
+    const player : Player = useSelector(selectPlayer)
     return (
         <div className="game-status-bar text-center rounded">
             {gameState.phase == GamePhase.Bid && player.role == GameRole.Crew && "Your team captain(s) can see the words and are predicting how many clue words they'll need to give you."}
@@ -106,13 +106,13 @@ function GameStatusBar(props: {currentTeamIndex: number}) {
 }
 
 function GameWordsPanel(props: {currentTeamIndex: number}) {
-    const gameWords = useSelector(selectGameWords);
-    const gameState = useSelector(selectGameState);
+    const gameWords = useSelector(selectGameWords)
+    const gameState = useSelector(selectGameState)
     return (
         <FlexBox classes="flex-wrap align-items-center justify-content-center">
-            {gameWords.map( (word, index) => {
+            {gameWords.map((word, index) => {
                 return (
-                    <WordBox word={word} visible={word.visibility == WordVisibility.Visible ? true : false /*gameState.teamStates[props.currentTeamIndex].wordsGuessed.includes(word.word)*/} index={index} />
+                    <WordBox word={word} visible={word.visibility == WordVisibility.Visible ? true : false} index={index} key={"gameWord-" + index} />
                 )
             })}
         </FlexBox>
@@ -172,33 +172,35 @@ function GameSummaryPanel(props: {backToLobby: Function}) {
     return (
         <div>
             <h3 className="text-center">Game Summary</h3>
-            <FlexBox classes={"justify-content-center align-items-center flex-wrap"}>
+            <FlexBox classes={"justify-content-center align-items-stretch flex-wrap"}>
             {gameState.teamStates.map((teamState, index) => {
-                console.log(teamState, gameState.words)
-                let totalPoints = 0;
-                totalPoints += teamState.wordsGuessed.length * 2;
+                let totalPoints = 0
+                totalPoints += teamState.wordsGuessed.length * 2
                 if (teamState.wordsGuessed.length == gameState.words.length) {
-                    totalPoints += 3 * (25 - teamState.currentBid);
-                    totalPoints += teamState.currentBid - teamState.cluesGiven.length;
+                    totalPoints += 3 * (25 - teamState.currentBid)
+                    totalPoints += teamState.currentBid - teamState.cluesGiven.length
                 }
-                return <FlexBox classes="team-score-summary">
-                    <div className="team-summary-number rounded text-center">Team {index + 1}</div>
-                    <FlexBox classes={"justify-content-between"}>
-                        <div className="game-summary-text rounded mr-2">Found {teamState.wordsGuessed.length == gameState.words.length ? "all the" : teamState.wordsGuessed.length} words</div>
-                        <div className="game-summary-points rounded">+ {teamState.wordsGuessed.length * 2} points</div>
-                    </FlexBox>
-                    {teamState.wordsGuessed.length == gameState.words.length && 
+                return <FlexBox classes="flex-column justify-content-between team-score-summary" key={"teamSummary-" + index}>
                     <div>
+                        <div className="team-summary-number rounded text-center">Team {index + 1}</div>
                         <FlexBox classes={"justify-content-between"}>
-                            <div className="game-summary-text rounded mr-2">Bid {teamState.currentBid} clues</div>
-                            <div className="game-summary-points rounded">+ {3 * (25 - teamState.currentBid)} points</div>
+                            <div className="game-summary-text rounded mr-2">Found {teamState.wordsGuessed.length == gameState.words.length ? "all the" : teamState.wordsGuessed.length} words</div>
+                            <div className="game-summary-points rounded">+ {teamState.wordsGuessed.length * 2} points</div>
                         </FlexBox>
-                        <FlexBox classes={"justify-content-between"}>
-                            <div className="game-summary-text rounded mr-2">{teamState.currentBid - teamState.cluesGiven.length} clues unused</div>
-                            <div className="game-summary-points rounded">+ {teamState.currentBid - teamState.cluesGiven.length} points</div>
-                        </FlexBox>
+                        {teamState.wordsGuessed.length == gameState.words.length && 
+                        <div>
+                            <FlexBox classes={"justify-content-between"}>
+                                <div className="game-summary-text rounded mr-2">Bid {teamState.currentBid} clues</div>
+                                <div className="game-summary-points rounded">+ {3 * (25 - teamState.currentBid)} points</div>
+                            </FlexBox>
+                            <FlexBox classes={"justify-content-between"}>
+                                <div className="game-summary-text rounded mr-2">{teamState.currentBid - teamState.cluesGiven.length} clues unused</div>
+                                <div className="game-summary-points rounded">+ {teamState.currentBid - teamState.cluesGiven.length} points</div>
+                            </FlexBox>
+                        </div>
+                        }
                     </div>
-                    }
+                    
                     <FlexBox classes={"justify-content-between gap-2"}>
                         <div className="game-summary-text rounded mr-2">Total</div>
                         <div className="game-summary-points rounded">+ {totalPoints} points</div>
@@ -295,12 +297,12 @@ function GameBidPanel(props: {onSubmit: Function, currentTeamIndex: number}) {
 }
 
 function GameBidPanelTeams(props: {currentTeamIndex: number}) {
-    const gameState: GameState = useSelector(selectGameState);
+    const gameState: GameState = useSelector(selectGameState)
     return(
         <FlexBox classes="game-bid-teams-container justify-content-center">
         {gameState.teamStates.map( (state, index) => {
             return (
-                <FlexBox classes={"flex-column justify-content-center mx-auto align-items-center game-bid-team-bid-container " + (index == props.currentTeamIndex ? "own-team-game-bid-team-bid-container" : "")}>
+                <FlexBox classes={"flex-column justify-content-center align-items-center game-bid-team-bid-container " + (index == props.currentTeamIndex ? "own-team-game-bid-team-bid-container" : "")} key={"gameBidPanelTeam-" + index}>
                     <div className="game-bid-team-bid rounded">{state.currentBid}</div>
                     <div className={"game-bid-team-number rounded " + (index == props.currentTeamIndex ? "own-team-bid" : "")}>Team {index + 1}</div>
                 </FlexBox>
@@ -325,9 +327,9 @@ function GameGuessOrCluePanel(props: {onSubmit: Function}) {
 }
 
 function TeamSocialPanel(props: {currentTeamIndex: number}) {
-    const gameSettings: GameSettings = useSelector(selectGameSettings);
+    const gameSettings: GameSettings = useSelector(selectGameSettings)
     return (
-        <FlexBox classes="justify-content-center align-items-center flex-wrap teams-container">
+        <FlexBox classes="justify-content-center align-items-center flex-wrap teams-container" key={"teamSocialPanel-" + props.currentTeamIndex}>
             {gameSettings.teams.map( (team, index) => {
                 return (
                     <div className="mr-1">

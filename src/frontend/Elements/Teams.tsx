@@ -58,7 +58,7 @@ export function Avatar(props: {player: Player}) {
     if (props.player.lastAction.action == PlayerSpeechAction.MakeGuessHit) {imgSrc = hit};
     if (props.player.lastAction.action == PlayerSpeechAction.MakeGuessMiss) {imgSrc = miss};
     return (
-        <FlexBox classes={"avatar " + (ownPlayer.account.id == props.player.account.id ? "own-avatar " : "") + "flex-column align-items-center justify-content-between"}>
+        <FlexBox classes={"avatar " + (ownPlayer.account.id == props.player.account.id ? "own-avatar rounded " : "") + "flex-column align-items-center justify-content-between"}>
             <div className="avatar-img-container">
                 <img src={props.player.role == GameRole.Captain ? wizard : knight} />
                 <div className="avatar-speech-bubble-container" key={props.player.lastAction.time} style={imgSrc == "" ? {display: "none"} : {}}>

@@ -12,12 +12,11 @@ export function generateAccount() {
     account = {
         id: d.toString(),
         username: "AustinRocks" + dT,
-        socketID: socket.id
+        socketID: ""
     }
     socket.on('connect', () => {
         setAccount({...account, socketID: socket.id})
     })
-    console.log(account)
     setAccount(account)
     store.dispatch(updatePlayerAccount(account));
 }

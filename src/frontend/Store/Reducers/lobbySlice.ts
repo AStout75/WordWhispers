@@ -22,12 +22,9 @@ const lobbySlice = createSlice({
             lobby.gameState = action.payload;
         },
         setGamePhase(lobby, action: PayloadAction<GamePhase>) {
-            if (action.payload == GamePhase.Guess) {
-                console.log("Setting timer from", lobby.gameState.timer, "to", (lobby.gameSettings.guessTime * 1000) + Date.now());
-                lobby.gameState.timer = (lobby.gameSettings.guessTime * 1000) + Date.now();
-                console.log(lobby.gameState.timer);
-            }
-            lobby.gameState.phase = action.payload;
+            if (action.payload == GamePhase.Guess)
+                lobby.gameState.timer = (lobby.gameSettings.guessTime * 1000) + Date.now()
+            lobby.gameState.phase = action.payload
         },
         refreshTeams(lobby, action: PayloadAction<Team[]>) {
             lobby.gameSettings.teams = action.payload;

@@ -51,7 +51,8 @@ export function handleSubmitClueRequest (io: Server, socket: Socket<ClientToServ
         throw new Error("Player submitted clue from lounge")
     if (player.role != GameRole.Captain)
         throw new Error("Non-captain player submitted clue")
-    
+    if (value.length == 0)
+        throw new Error("Player submitted empty clue")
     if (value.length > 64)
         throw new Error("Player submitted clue that was too long")
     if (lobby.gameState.teamStates[location as number].cluesGiven.length + splitBySpace.length > lobby.gameState.teamStates[location as number].currentBid)
@@ -61,8 +62,8 @@ export function handleSubmitClueRequest (io: Server, socket: Socket<ClientToServ
     splitBySpace.forEach((word) => {
         if (!lobby.gameState.teamStates[location as number].cluesGiven.some((clue) => clue == word)) {
             lobby.gameState.teamStates[location as number].cluesGiven.push(word)
-            lobby.gameState.teamStates[location as number].log.push({type: "clue", value: value, origin: player.account} as GameLogEntry)
-            io.to(lobbyID + "-team" + location).emit("player-gave-clue", id, value)
+            lobby.gameState.teamStates[location as number].log.push({type: "clue", value: word, origin: player.account} as GameLogEntry)
+            io.to(lobbyID + "-team" + location).emit("player-gave-clue", id, word)
         }
     })
     io.to(lobbyID).emit("player-gave-clue-social", id)

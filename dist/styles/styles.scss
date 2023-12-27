@@ -281,6 +281,7 @@ section {
     animation-fill-mode: forwards;
     animation-delay: 1s;
     opacity: 0;
+    margin-bottom: 20px;
 }
 
 .update-name-input {
@@ -302,6 +303,29 @@ section {
 
 .name-valid-container-invalid > svg {
     background: var(--color-primary);
+}
+
+.index-info {
+    background: var(--color-primary-deselected);
+    padding: 8px;
+    max-width: 500px;
+    margin: 20px auto;
+}
+
+.info-a {
+    color: black;
+    
+}
+
+.rules-img {
+    width: 36px;
+    height: 36px;
+    margin-right: 5px;
+}
+
+.connect-img {
+    width: 60px;
+    height: 60px;
 }
 
 .return-home-button {

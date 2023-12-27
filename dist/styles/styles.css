@@ -277,6 +277,7 @@ section {
   animation-fill-mode: forwards;
   animation-delay: 1s;
   opacity: 0;
+  margin-bottom: 20px;
 }
 
 .update-name-input {
@@ -298,6 +299,28 @@ section {
 
 .name-valid-container-invalid > svg {
   background: var(--color-primary);
+}
+
+.index-info {
+  background: var(--color-primary-deselected);
+  padding: 8px;
+  max-width: 500px;
+  margin: 20px auto;
+}
+
+.info-a {
+  color: black;
+}
+
+.rules-img {
+  width: 36px;
+  height: 36px;
+  margin-right: 5px;
+}
+
+.connect-img {
+  width: 60px;
+  height: 60px;
 }
 
 .return-home-button {
@@ -742,6 +765,7 @@ input[type=number] {
 
 .make-bid-button {
   background: var(--color-primary);
+  color: black;
   padding: 5px;
   font-size: 1rem;
   text-transform: uppercase;
@@ -903,6 +927,7 @@ form {
 
 .give-guess-or-clue-button {
   background: var(--color-primary);
+  color: black;
   padding: 5px;
   font-size: 1.5rem;
   text-transform: uppercase;

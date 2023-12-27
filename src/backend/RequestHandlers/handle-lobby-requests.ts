@@ -11,7 +11,7 @@ import e from "express";
 const MAX_LOBBIES = 900;
 const MAX_PLAYERS_PER_LOBBY:number = 16;
 const DEFAULT_BID:number = 25;
-const DEFAULT_BID_TIME:number = 10000;
+const DEFAULT_BID_TIME:number = 15000;
 const DEFAULT_GUESS_TIME:number = 120000;
 
 export function handleViewLobbiesRequest (io: Server, socket: Socket<ClientToServerEvents, ServerToClientEvents>): void {
@@ -231,7 +231,7 @@ export function handleDisconnect(io: Server, socket: Socket<ClientToServerEvents
 
 function setGamePhase(io: Server, lobby: Lobby, phase: GamePhase) {
     if (!(lobby.lobbySettings.id in lobbies)) {
-        console.error("Lobby " + lobby.lobbySettings.id + " doesn't exist")//throw new Error("Lobby " + lobby.lobbySettings.id + " doesn't exist")
+        console.error("Set Game Phase: Lobby " + lobby.lobbySettings.id + " doesn't exist")//throw new Error("Lobby " + lobby.lobbySettings.id + " doesn't exist")
         return
     }
     lobby.gameState.phase = phase
@@ -247,7 +247,7 @@ function setGamePhase(io: Server, lobby: Lobby, phase: GamePhase) {
 function endGame(io: Server, lobby: Lobby) {
     const connectedSocketIDs = io.sockets.adapter.rooms.get(lobby.lobbySettings.id)
     if (!connectedSocketIDs) {
-        console.error("Couldn't get connected sockets for " + lobby.lobbySettings.id)//throw new Error("Couldn't get connected sockets for " + lobby.lobbySettings.id)
+        console.error("End Game: Couldn't get connected sockets for " + lobby.lobbySettings.id)//throw new Error("Couldn't get connected sockets for " + lobby.lobbySettings.id)
         return
     }
     lobby.gameSettings.teams.forEach((team, index) => { //Scoring

@@ -12,6 +12,8 @@ import { IconDefinition, IconName } from '@fortawesome/fontawesome-svg-core';
 import { getAccount, setAccount } from '../Store/account';
 import { store } from '../Store/store';
 import { updatePlayerAccount } from '../Store/Reducers/playerSlice';
+import wizard from "../Assets/wizard.png";
+import knight from "../Assets/knight.png";
 
 export default function IndexPage(props: SetAppPageProps) {
     const socket = useSocketContext();
@@ -24,7 +26,8 @@ export default function IndexPage(props: SetAppPageProps) {
     const clickedQueue = () => {
         //store.dispatch(updatePlayerAccount({ ...getAccount(), username: name }));
         sendViewLobbiesRequest(socket);
-        setAccount({ ...getAccount(), username: name })
+        if (validName)
+            setAccount({ ...getAccount(), username: name })
         props.setPageState(PageType.Lobbies);
         
     };
@@ -56,13 +59,13 @@ export default function IndexPage(props: SetAppPageProps) {
                 <IndexPageButton onClick={clickedQueue} wrapperClass={''} buttonClass={'queue-button'} buttonText={'Quick play'} icon={solid("play")} />
                 {/*<IndexPageButton onClick={clickedCustomLobbies} wrapperClass={''} buttonClass={'lobbies-button'} buttonText={'Custom lobbies'} icon={solid("people-group")} />
                 <IndexPageButton onClick={clickedSpectate} wrapperClass={''} buttonClass={'spectate-button'} buttonText={'Spectate'} icon={solid("eye")} /> */}
-        </FlexBox>
+            </FlexBox>
             <FlexBox classes="update-name justify-content-center gap-2">
                 <input
                     type="text"
                     className="update-name-input rounded"
                     id="update-name-input"
-                    placeholder={getAccount().username}
+                    defaultValue={getAccount().username}
                     maxLength={16}
                     minLength={3}
                     onChange={(event) => setName(event.target.value)}
@@ -71,7 +74,37 @@ export default function IndexPage(props: SetAppPageProps) {
                     <FontAwesomeIcon icon={validName ? solid("check") : solid("times")} className="name-valid-icon rounded-circle position-absolute" />
                 </FlexBox>
             </FlexBox>
-           </div>
+            <div className="index-info rounded">
+                <h3 className="text-center">How to play</h3>
+                <FlexBox classes="rules-row  align-items-center">
+                    <img src={wizard} className="rules-img" />
+                    These players know the hidden words. They give clues to their teammates. They can bid less clues to get more points, but can't change their bid once they start!
+                </FlexBox>
+                <FlexBox classes="rules-row  align-items-center">
+                    <img src={knight} className="rules-img" />
+                    These players guess the hidden words using clues. Good for beginners.
+                </FlexBox>
+                <br />
+                <h3 className="text-center">Find a game / Connect</h3>
+                <FlexBox classes="justify-content-around">
+                    <div className="text-center">
+                        <a href="https://discord.gg/8G897czMEr"><img className="connect-img" src="https://assets-global.website-files.com/6257adef93867e50d84d30e2/653714c174fc6c8bbea73caf_636e0a69f118df70ad7828d4_icon_clyde_blurple_RGB.svg"></img></a>
+                        <br />
+                        <a href="https://discord.gg/8G897czMEr" className="info-a">Join the Discord</a>
+                    </div>
+                    <div className="text-center">
+                        <a href="https://www.linkedin.com/in/~austin/"><img className="connect-img" src="https://content.linkedin.com/content/dam/me/business/en-us/amp/brand-site/v2/bg/LI-Bug.svg.original.svg"></img></a>
+                        <br />
+                        <a href="https://www.linkedin.com/in/~austin/" className="info-a">Developed by Austin</a>
+                    </div>
+                </FlexBox>
+                <br />
+                <h3 className="text-center">Update history</h3>
+                <ul>
+                    <li>12/27/2023 - Initial release</li>
+                </ul>  
+            </div>
+        </div>
     )
 }
 

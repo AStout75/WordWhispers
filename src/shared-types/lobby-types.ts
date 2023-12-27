@@ -83,7 +83,7 @@ export interface GameSettings {
 export const defaultGameState = {
     phase: GamePhase.Bid,
     words: [] as Word[],
-    timer: 30,
+    timer: 50,
     teamStates: [] as TeamState[]
 } as GameState
 
@@ -100,7 +100,7 @@ export const defaultLobby = {
     gameSettings: {
         wordCount: 5,
         wordPack: WordPack.Classic,
-        guessTime: 30,
+        guessTime: 50,
         teams: [] as Team[],
         lounge: {players: []} as Lounge,
         ready: {

@@ -36,7 +36,7 @@ export default function LobbyPage(props: LobbyPageProps) {
         })
     });
     let canStart = true;
-    for (let i = 0; i < teams.length; i++) {
+    /*for (let i = 0; i < teams.length; i++) {
         if (teams[i].players.length == 0) {
             canStart = false;
             break;
@@ -47,7 +47,7 @@ export default function LobbyPage(props: LobbyPageProps) {
                 break;
             }
         }
-    }
+    } */
     const clickedChangeRole = (role: GameRole) => {
         sendChangeRoleRequest(socket, getAccount().id, lobbySettings.id, role);
     };

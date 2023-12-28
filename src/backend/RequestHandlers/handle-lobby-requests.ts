@@ -16,11 +16,11 @@ const DEFAULT_GUESS_TIME:number = 120000;
 
 export function handleViewLobbiesRequest (io: Server, socket: Socket<ClientToServerEvents, ServerToClientEvents>): void {
     console.log("*Incoming Request*\n<View Lobbies> - Socket ID", socket.id);
-    const lobbiesArray = [] as Lobby[];
+    const lobbiesArray = [] as Lobby[]
     Object.values(lobbies).forEach((lobbyStore : LobbyStore) => {
-        lobbiesArray.push(lobbyStore.lobby);
-    });
-    socket.emit('lobbies', lobbiesArray);
+        lobbiesArray.push(lobbyStore.lobby)
+    })
+    socket.emit('lobbies', lobbiesArray)
 }
 
 export function handleCreateLobbyRequest (io: Server, socket: Socket<ClientToServerEvents, ServerToClientEvents>, account: Account): void {
@@ -187,6 +187,22 @@ export function handleStartGameRequest(io: Server, socket: Socket<ClientToServer
     if (!connectedSocketIDs)
         throw new Error("Couldn't get connected sockets for " + lobbyID)
     //Add logic here to check if all players are ready, all teams are valid, etc.
+    if (lobby.gameSettings.teams.length == 0)
+        throw new Error("Lobby " + lobbyID + " has no teams")
+    lobby.gameSettings.teams.forEach((team, index) => {
+        let captainCount = 0
+        let crewCount = 0
+        team.players.forEach((player) => {
+            if (!player.ready)
+                throw new Error("Not all players are ready")
+            if (player.role == GameRole.Captain)
+                captainCount++
+            else if (player.role == GameRole.Crew)
+                crewCount++
+        })
+        if (captainCount == 0 || crewCount == 0)
+            throw new Error("Team " + (index + 1) + " is missing a captain or crew member")
+    })
     
     const visibleGameState = generateNewGame(lobby.gameSettings)
     lobby.gameState = visibleGameState

@@ -29,7 +29,6 @@ export default function IndexPage(props: SetAppPageProps) {
         if (validName)
             setAccount({ ...getAccount(), username: name })
         props.setPageState(PageType.Lobbies);
-        
     };
     const clickedSpectate = () => {
         props.setPageState(PageType.Lobbies);
@@ -49,10 +48,10 @@ export default function IndexPage(props: SetAppPageProps) {
             */}
             <section className="slide">
                 <div className="ml-4">
-                    <h2 className="slide-word slide-word-top slide-word-warm d-inline-block" data-animation="slide">25</h2><h2 className="slide-word slide-word-top slide-word-cool d-inline-block" data-animation="slide"> Words</h2>
+                    <h2 className="slide-word slide-word-top slide-word-warm d-inline-block" data-animation="slide">Word</h2> {/*<h2 className="slide-word slide-word-top slide-word-cool d-inline-block" data-animation="slide"> Whispers</h2>*/}
                 </div>
                 <div className="ml-4">
-                    <h2 className="slide-word slide-word-bottom slide-word-neutral slide-word-small" data-animation="slide">Or Less</h2>
+                    <h2 className="slide-word slide-word-bottom slide-word-neutral slide-word-small" data-animation="slide">Whispers</h2>
                 </div>
             </section>
             <FlexBox classes={'flex-wrap justify-content-around index-page-buttons-container text-center'}>
@@ -84,6 +83,9 @@ export default function IndexPage(props: SetAppPageProps) {
                     <img src={knight} className="rules-img" />
                     These players guess the hidden words using clues. Good for beginners.
                 </FlexBox>
+                <FlexBox classes="rules-row justify-content-center align-items-center">
+                    <b>To start, you need at least 1 team - Each team needs at least one wizard and one knight.</b>
+                </FlexBox>
                 <br />
                 <h3 className="text-center">Find a game / Connect</h3>
                 <FlexBox classes="justify-content-around">
@@ -103,6 +105,12 @@ export default function IndexPage(props: SetAppPageProps) {
                 <ul>
                     <li>12/27/2023 - Initial release</li>
                 </ul>  
+                <br />
+                <h3 className="text-center">Credits</h3>
+                <ul>
+                    <li>Icons - <a href="https://www.flaticon.com/free-icons/wizard" className="info-a" title="wizard icons">max.icons - Flaticon</a></li>
+                    <li>Title Lettering - <a href="https://www.linkedin.com/in/steveg3003/" className="info-a">Steve Gardner</a></li>
+                </ul>
             </div>
         </div>
     )

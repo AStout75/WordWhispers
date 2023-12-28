@@ -171,7 +171,7 @@ let lobbyThreeMembersTwoTeams:Lobby = {
     } as GameState
 }
 
-let lobbies: {[id: string] : LobbyStore} = {
+let lobbies: {[id: string] : LobbyStore} = {}/*{
     "cbadef123": {
         lobby: lobbyOneMemberNoTeams,
         locations: {
@@ -187,7 +187,7 @@ let lobbies: {[id: string] : LobbyStore} = {
             "napster22": "lounge"
         }
     }
-};
+};*/
 
 export const wordBank : string[] = require("../Assets/word-lists.json")["basic"];
 export default lobbies;

@@ -15,6 +15,8 @@ import { generateAccount } from './Store/account';
 import { Account } from '../shared-types/account-types';
 import { GamePhase, GameRole, GameState, TeamState } from '../shared-types/game-types';
 import { resetPlayer, toggleLocalPlayerReady, updatePlayerRole, updatePlayerScore } from './Store/Reducers/playerSlice';
+import Notifications from './Elements/Notifications';
+import { addNotification } from './Store/Reducers/notificationsSlice';
 
 function App() {
     const [page, setPage] = useState(PageType.Index);
@@ -43,6 +45,7 @@ function App() {
         socket.on('join-lobby-failed', (message: string) => {handleJoinLobbyFailed(message)});
         socket.on('leave-lobby-failed', (message: string) => {handleLeaveLobbyFailed(message)});
         socket.on('change-location-failed', (message: string) => {handleChangeLocationFailed(message)});
+        socket.on('start-game-failed', (message: string) => {handleGameStartedFailed(message)});
 
         socket.on('player-made-bid', (id: string, bid: number) => {handlePlayerMadeBid(id, bid)});
         socket.on('player-gave-clue', (id: string, clue: string) => {handlePlayerGaveClue(id, clue)});
@@ -66,6 +69,7 @@ function App() {
     return (
         <div>
             <Page page={page} setPageState={setPage}/>
+            <Notifications />
         </div>
     )
 }
@@ -200,6 +204,11 @@ const handleGameStarted = (game: GameState, setPage: Function) => {
     store.dispatch(refreshGameState(game));
     setPage(PageType.Game);
 };
+
+const handleGameStartedFailed = (message: string) => {
+    console.log("ERROR: ", message);
+    addNotification({title: "Couldn't start game", description: message, type: "error"});
+}
 
 const handleGuessingStarted = () => {
     console.log("Received guessing started");

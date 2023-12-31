@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import ButtonWithOnClickEvent from '../Elements/ButtonWithOnClickEvent';
 import { sendGiveClueRequest, sendGiveGuessRequest, sendJoinQueueCasualRequest, sendJoinQueueRankedRequest, sendLeaveQueueRequest, sendMakeBidRequest } from '../Socket/socket-events';
 import { PageProps, PageType, QueuePageProps, SetAppPageProps} from '../frontend-types/frontend-types';
@@ -149,14 +149,21 @@ function GameClock() {
 
 function GameLogPanel(props: {currentTeamIndex: number}) {
     const gameLog: GameLogEntry[] = useSelector(selectGameLog(props.currentTeamIndex));
-    
+    const logPanelRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (logPanelRef.current) {
+            logPanelRef.current.scrollTop = logPanelRef.current.scrollHeight;
+        }
+    }, [gameLog]);
+
     return (
-        <FlexBox classes="justify-content-start flex-wrap align-content-start game-log-panel">
-            {gameLog.length == 0 && <div className="text-center">Nothing has happened yet.</div>}
-            {gameLog.map( (entry, index) => {
-                return(<LogEntry key={index} entry={entry} currentTeamIndex={props.currentTeamIndex} />)
+        <div className="d-flex justify-content-start flex-wrap align-content-start game-log-panel" ref={logPanelRef}>
+            {gameLog.length === 0 && <div className="text-center">Nothing has happened yet.</div>}
+            {gameLog.map((entry, index) => {
+                return (<LogEntry key={index} entry={entry} currentTeamIndex={props.currentTeamIndex} />)
             })}
-        </FlexBox>
+        </div>
     )
 }
 

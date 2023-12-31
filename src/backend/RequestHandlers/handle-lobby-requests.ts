@@ -11,7 +11,7 @@ import e from "express";
 const MAX_LOBBIES = 900;
 const MAX_PLAYERS_PER_LOBBY:number = 16;
 const DEFAULT_BID:number = 25;
-const DEFAULT_BID_TIME:number = 15000;
+const DEFAULT_BID_TIME:number = 30000;
 const DEFAULT_GUESS_TIME:number = 120000;
 
 export function handleViewLobbiesRequest (io: Server, socket: Socket<ClientToServerEvents, ServerToClientEvents>): void {

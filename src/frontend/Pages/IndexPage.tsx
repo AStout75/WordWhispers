@@ -75,16 +75,24 @@ export default function IndexPage(props: SetAppPageProps) {
             </FlexBox>
             <div className="index-info rounded">
                 <h3 className="text-center">How to play</h3>
-                <FlexBox classes="rules-row  align-items-center">
+                <FlexBox classes="rules-row justify-content-center text-center align-items-center">
+                The goal of the game is to guess the 5 hidden words. There are two player roles, captain and crew. <br/>
+                To start, you need at least 1 team with 2 players or more - Each team needs at least one captain and crew member. <br/>
+                </FlexBox>
+                <br />
+                <FlexBox classes="rules-row align-items-center">
                     <img src={wizard} className="rules-img" />
-                    These players know the hidden words. They give clues to their teammates. They can bid less clues to get more points, but can't change their bid once they start!
+                    These players (captains) know the hidden words. They can give related words as clues to their teammates, but clues are limited!
+                    They also must bid (pick a number of clues to use) at the start of the game. The less they bid, the more points they get if they win - but the harder it is to win!
                 </FlexBox>
-                <FlexBox classes="rules-row  align-items-center">
+                <br />
+                <FlexBox classes="rules-row align-items-center">
                     <img src={knight} className="rules-img" />
-                    These players guess the hidden words using clues. Good for beginners.
+                    These players (crew) guess the hidden words using clues. They have unlimited guesses! Good for beginners.
                 </FlexBox>
-                <FlexBox classes="rules-row justify-content-center align-items-center">
-                    <b>To start, you need at least 1 team - Each team needs at least one wizard and one knight.</b>
+                <br />
+                <FlexBox classes="rules-row justify-content-center text-center align-items-center">
+                    The game is harder than you think! Good luck.
                 </FlexBox>
                 <br />
                 <h3 className="text-center">Find a game / Connect</h3>
@@ -103,7 +111,7 @@ export default function IndexPage(props: SetAppPageProps) {
                 <br />
                 <h3 className="text-center">Update history</h3>
                 <ul>
-                    <li>12/27/2023 - Initial release</li>
+                    <li>12/31/2023 - Initial release</li>
                 </ul>  
                 <br />
                 <h3 className="text-center">Credits</h3>

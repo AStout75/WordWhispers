@@ -86,10 +86,11 @@ function GameMainPanel(props: {giveGuessOrClue: Function, makeBid: Function, bac
             <GameClock />
             <FancyHRTitle text={"Hidden Words"} titleClass={''} />
             <GameWordsPanel currentTeamIndex={props.currentTeamIndex} />
-            <FancyHRTitle text={text} titleClass={''} />
-            <GameInputPanel giveGuessOrClue={props.giveGuessOrClue} makeBid={props.makeBid} backToLobby={props.backToLobby} currentTeamIndex={props.currentTeamIndex} />
             <FancyHRTitle text={"Game Log"} titleClass={''} />
             <GameLogPanel currentTeamIndex={props.currentTeamIndex} />
+            <FancyHRTitle text={text} titleClass={''} />
+            <GameInputPanel giveGuessOrClue={props.giveGuessOrClue} makeBid={props.makeBid} backToLobby={props.backToLobby} currentTeamIndex={props.currentTeamIndex} />
+            
         </div>
     )
 }

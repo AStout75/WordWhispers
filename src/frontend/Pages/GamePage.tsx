@@ -103,7 +103,7 @@ function GameStatusBar(props: {currentTeamIndex: number}) {
         <div className="game-status-bar text-center rounded">
             {gameState.phase == GamePhase.Bid && player.role == GameRole.Crew && "Your team captain(s) can see the words and are predicting how many clue words they'll need to give you."}
             {gameState.phase == GamePhase.Bid && player.role == GameRole.Captain && "Bid the amount of clue words you'll need to get your teammates to guess these hidden words."}
-            {gameState.phase == GamePhase.Guess && player.role == GameRole.Captain && "You have " + (gameState.teamStates[props.currentTeamIndex].currentBid - gameState.teamStates[props.currentTeamIndex].cluesGiven.length) + " clues left to give your team!"}
+            {gameState.phase == GamePhase.Guess && player.role == GameRole.Captain && "You have " + (gameState.teamStates[props.currentTeamIndex].currentBid - new Set(gameState.teamStates[props.currentTeamIndex].cluesGiven).size) + " clues left to give your team!"}
             {gameState.phase == GamePhase.Guess && player.role == GameRole.Crew && "Using your team captain(s)'s clues, guess the hidden words! You have unlimited guesses."}
             {gameState.phase == GamePhase.End && "The game has ended."}
         </div>
@@ -154,7 +154,7 @@ function GameLogPanel(props: {currentTeamIndex: number}) {
         <FlexBox classes="justify-content-start flex-wrap align-content-start game-log-panel">
             {gameLog.length == 0 && <div className="text-center">Nothing has happened yet.</div>}
             {gameLog.map( (entry, index) => {
-                return(<LogEntry key={index} entry={entry} />)
+                return(<LogEntry key={index} entry={entry} currentTeamIndex={props.currentTeamIndex} />)
             })}
         </FlexBox>
     )
@@ -240,10 +240,21 @@ function WordBox(props: {word: Word, visible: boolean, index: number}) {
     )
 }
 
-function LogEntry(props: {entry: GameLogEntry}) {
+function LogEntry(props: {entry: GameLogEntry, currentTeamIndex: number}) {
+    const gameSettings: GameSettings = useSelector(selectGameSettings);
+    let logEntryType = props.entry.type.toString();
+    let textValue = props.entry.value
+    if (props.entry.type == GameLogEntryType.Bid) {
+        const index = gameSettings.teams.findIndex((team) => team.players.find((player) => player.account.id == props.entry.origin.id))
+        if (index != props.currentTeamIndex) {
+            logEntryType = "bid-other";
+        }
+        textValue = "Team " + (index + 1) + " bids: " + props.entry.value;
+    }
+        
     return (
-        <FlexBox classes={"rounded flex-column justify-content-center align-items-center log-entry log-entry-" + props.entry.type}>
-            {props.entry.value}
+        <FlexBox classes={"rounded flex-column justify-content-center align-items-center log-entry log-entry-" + logEntryType}>
+            {textValue}
             <hr />
             <div>
                 <div className="log-entry-img-container d-inline-block">

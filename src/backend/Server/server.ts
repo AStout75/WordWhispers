@@ -18,25 +18,24 @@ const serverConfig = {
 
 export function initHTTPServer(): Server<typeof IncomingMessage, typeof ServerResponse> {
     //Serve files
-    var app = express();
+    var app = express()
     app.get('/', function(_req: any, res: any) {
-        console.log("just got /");
-        res.sendFile(path.join(process.cwd() + serverConfig.INDEX));
+        console.log("just got /")
+        res.sendFile(path.join(process.cwd() + serverConfig.INDEX))
     });
-    app.use(express.static(path.join(process.cwd(), 'dist')));
+    app.use(express.static(path.join(process.cwd(), 'dist')))
 
     let httpServer = require('http').createServer(app)
     httpServer.listen(serverConfig.PORT, () => console.log(`Listening on ${serverConfig.PORT}`))
-    return httpServer;
-    //app.listen(serverConfig.PORT, () => console.log(`Listening on ${serverConfig.PORT}`));
+    return httpServer
 }
 
 export function initSocketServer(server: Server<typeof IncomingMessage, typeof ServerResponse>, test: boolean): socketIO {
-    const io = new socketIO<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(server, {multiplex: !test} as Partial<ServerOptions>);
+    const io = new socketIO<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(server, {multiplex: !test} as Partial<ServerOptions>)
     io.on('connection', (socket: Socket<ClientToServerEvents, ServerToClientEvents>) => {
-        addListenersForNewConnection(io, socket);
-    });
-    return io;
+        addListenersForNewConnection(io, socket)
+    })
+    return io
 }
 
 export function addListenersForNewConnection(io: socketIO, socket: Socket<ClientToServerEvents, ServerToClientEvents>) {

@@ -200,8 +200,10 @@ export function handleStartGameRequest(io: Server, socket: Socket<ClientToServer
             else if (player.role == GameRole.Crew)
                 crewCount++
         })
-        if (captainCount == 0 || crewCount == 0)
-            throw new Error("Team " + (index + 1) + " is missing a captain or crew member")
+        if (captainCount == 0)
+            throw new Error("Team " + (index + 1) + " needs at least one captain")
+        if (crewCount == 0)
+            throw new Error("Team " + (index + 1) + " needs at least one crew member")
     })
     
     const visibleGameState = generateNewGame(lobby.gameSettings)

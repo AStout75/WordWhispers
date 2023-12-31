@@ -22,15 +22,18 @@ export function handleMakeBidRequest (io: Server, socket: Socket<ClientToServerE
         throw new Error("Player submitted bid from lounge")
     if (player.role != GameRole.Captain)
         throw new Error("Non-captain player submitted bid")
-    
     if (value < 1)
         throw new Error('Bid made was less than 1')
     if (value > 50)
         throw new Error('Bid made was greater than 50')
+    if (value == lobby.gameState.teamStates[location as number].currentBid)
+        throw new Error('Bid made was equal to current bid')
     
     lobby.gameState.teamStates[location as number].currentBid = value
-    lobby.gameState.teamStates[location as number].log.push({type: "bid", value: value.toString(), origin: player.account} as GameLogEntry);
-    io.to(lobbyID).emit("player-made-bid", id, value)
+    lobby.gameState.teamStates.forEach((team) => {
+        team.log.push({type: "bid", value: value.toString(), origin: player.account} as GameLogEntry)
+    })
+    io.to(lobbyID).emit("player-made-bid", id, value.toString())
 }
 
 export function handleSubmitClueRequest (io: Server, socket: Socket<ClientToServerEvents, ServerToClientEvents>, id: string, lobbyID: string, value: string): void {
@@ -40,7 +43,8 @@ export function handleSubmitClueRequest (io: Server, socket: Socket<ClientToServ
     const lobby = lobbies[lobbyID].lobby
     const location : number | string = lobbies[lobbyID].locations[id]
     const player = lobby.gameSettings.teams[location as number].players.find(player => player.account.id == id)
-    const splitBySpace = value.split(" ")
+    value = value.trim()
+    let splitBySpace = value.split(" ")
     if (lobby.lobbySettings.phase != LobbyPhase.Game)
         throw new Error("Lobby " + lobbyID + " is not in the game phase")
     if (!lobby.lobbySettings.members.some(member => member.id == id))
@@ -55,17 +59,17 @@ export function handleSubmitClueRequest (io: Server, socket: Socket<ClientToServ
         throw new Error("Player submitted empty clue")
     if (value.length > 64)
         throw new Error("Player submitted clue that was too long")
-    if (lobby.gameState.teamStates[location as number].cluesGiven.length + splitBySpace.length > lobby.gameState.teamStates[location as number].currentBid)
-        throw new Error("Player submitted too many clues")
     if (splitBySpace.length == 0)
         throw new Error("Player submitted empty clue")
-    splitBySpace.forEach((word) => {
-        if (!lobby.gameState.teamStates[location as number].cluesGiven.some((clue) => clue == word)) {
-            lobby.gameState.teamStates[location as number].cluesGiven.push(word)
-            lobby.gameState.teamStates[location as number].log.push({type: "clue", value: word, origin: player.account} as GameLogEntry)
-            io.to(lobbyID + "-team" + location).emit("player-gave-clue", id, word)
-        }
-    })
+    console.log("before filtering", splitBySpace)
+    splitBySpace = splitBySpace.filter((word) => !lobby.gameState.teamStates[location as number].cluesGiven.includes(word) && word != "")
+    console.log("after filtering", splitBySpace)
+    if (splitBySpace.length + lobby.gameState.teamStates[location as number].cluesGiven.length > lobby.gameState.teamStates[location as number].currentBid)
+        throw new Error("Player submitted too many clues")
+    lobby.gameState.teamStates[location as number].log.push({type: "clue", value: value, origin: player.account} as GameLogEntry)
+    lobby.gameState.teamStates[location as number].cluesGiven.push(...splitBySpace)
+    console.log("clues given", lobby.gameState.teamStates[location as number].cluesGiven)
+    io.to(lobbyID + "-team" + location).emit("player-gave-clue", id, value)
     io.to(lobbyID).emit("player-gave-clue-social", id)
 }
 

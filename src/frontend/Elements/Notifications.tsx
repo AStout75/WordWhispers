@@ -6,11 +6,10 @@ import { useSelector } from 'react-redux';
 
 
 export default function Notifications() {
-    const notifications = useSelector(selectNotifications);
-    console.log("Rendering", notifications)
-    return <FlexBox classes="notifications-container flex-column justify-content-end">
-        {notifications.map((notification) => {
-            return <div className={"notification-" + notification.type + " rounded"}>{notification.title}<br/>{notification.description}</div>
+    const notifications: {title: string, description: string, type: string} [] = useSelector(selectNotifications);
+    return <FlexBox classes="notifications-container flex-column align-items-end justify-content-end">
+        {notifications.map((notification, index) => {
+            return <div key={"notification-" + index} className={"notification-" + notification.type + " rounded"}><h4>{notification.title}</h4>{notification.description}</div>
         })}
     </FlexBox>
 }

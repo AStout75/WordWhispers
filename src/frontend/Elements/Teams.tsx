@@ -23,8 +23,8 @@ export function TeamPanel(props: {index: number, team: Team, currentTeamIndex: n
                 {props.team.score} points
             </div>
             <FlexBox classes="justify-content-around flex-wrap">
-                {props.team.players.map( (player) => {
-                    return <Avatar player={player} />
+                {props.team.players.map( (player, index) => {
+                    return <Avatar key={"player-avatar-" + index} player={player} />
                 })}
             </FlexBox>
             {empty && 

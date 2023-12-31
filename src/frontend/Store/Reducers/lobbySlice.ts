@@ -158,13 +158,17 @@ const lobbySlice = createSlice({
         },
 
         setBid(lobby, action: PayloadAction<{account: Account, teamIndex: number, bid: number}>) {
-            lobby.gameState.teamStates[action.payload.teamIndex].log = [...lobby.gameState.teamStates[action.payload.teamIndex].log, {value: action.payload.bid.toString(), type: GameLogEntryType.Bid, origin: action.payload.account} as GameLogEntry]
+            lobby.gameState.teamStates.forEach((team) => {
+                team.log = [...team.log, {value: action.payload.bid.toString(), type: GameLogEntryType.Bid, origin: action.payload.account} as GameLogEntry]
+            })
             lobby.gameState.teamStates[action.payload.teamIndex].currentBid = action.payload.bid;
         },
 
         addClue(lobby, action: PayloadAction<{account: Account, teamIndex: number, clue: string}>) {
             lobby.gameState.teamStates[action.payload.teamIndex].log = [...lobby.gameState.teamStates[action.payload.teamIndex].log, {value: action.payload.clue, type: GameLogEntryType.Clue, origin: action.payload.account} as GameLogEntry]
-            lobby.gameState.teamStates[action.payload.teamIndex].cluesGiven = [...lobby.gameState.teamStates[action.payload.teamIndex].cluesGiven, action.payload.clue]
+            let splitBySpace = action.payload.clue.split(" ")
+            splitBySpace = splitBySpace.filter(word => !lobby.gameState.teamStates[action.payload.teamIndex].cluesGiven.includes(word) && word != "")
+            lobby.gameState.teamStates[action.payload.teamIndex].cluesGiven = [...lobby.gameState.teamStates[action.payload.teamIndex].cluesGiven, ...splitBySpace]
         },
 
         addGuess(lobby, action: PayloadAction<{account: Account, teamIndex: number, guess: string, hit: boolean}>) {

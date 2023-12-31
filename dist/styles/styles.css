@@ -4,6 +4,7 @@ https://coolors.co/05668d-028090-00a896-02c39a-f0f3bd
 */
 :root {
   --color-light: #EBF9FE;
+  --color-medium: #CFF2FF;
   --disabled: lightgrey;
   --color-primary: #DB504A;
   --color-primary-deselected: #FAE6E5;
@@ -30,11 +31,11 @@ svg {
     transform: scale(0.9);
     opacity: 0;
   }
-  10% {
+  5% {
     transform: scale(1);
     opacity: 1;
   }
-  90% {
+  95% {
     opacity: 1;
   }
   100% {
@@ -50,7 +51,7 @@ svg {
 }
 
 .notifications-container > div {
-  animation: toast-pop 2.25s ease-out forwards;
+  animation: toast-pop 3s ease-out forwards;
   padding: 8px;
   border: 1px solid black;
   transition: all 0.25s;
@@ -61,7 +62,7 @@ svg {
 }
 
 .notification-info {
-  background: var(--color-important);
+  background: var(--color-medium);
 }
 
 h2 {
@@ -587,7 +588,7 @@ section {
 }
 
 .ready-button {
-  background: var(--color-primary-deselected);
+  background: var(--color-medium);
   display: inline-block;
   padding: 5px;
   font-size: 1rem;
@@ -915,6 +916,10 @@ input[type=number] {
 
 .log-entry-bid {
   background: var(--color-primary);
+}
+
+.log-entry-bid-other {
+  background: var(--color-medium);
 }
 
 .log-entry-clue {

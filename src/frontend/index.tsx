@@ -41,16 +41,25 @@ function App() {
         socket.on('guessing-started', () => {handleGuessingStarted()});
         socket.on('game-ended', (game: GameState, teams: Team []) => {handleGameEnded(game, teams)});
 
+        socket.on('view-lobbies-failed', (message: string) => handleViewLobbiesFailed(message));
         socket.on('create-lobby-failed', (message: string) => handleCreateLobbyFailed(message))
-        socket.on('join-lobby-failed', (message: string) => {handleJoinLobbyFailed(message)});
-        socket.on('leave-lobby-failed', (message: string) => {handleLeaveLobbyFailed(message)});
-        socket.on('change-location-failed', (message: string) => {handleChangeLocationFailed(message)});
-        socket.on('start-game-failed', (message: string) => {handleGameStartedFailed(message)});
+        socket.on('join-lobby-failed', (message: string) => handleJoinLobbyFailed(message));
+        socket.on('leave-lobby-failed', (message: string) => handleLeaveLobbyFailed(message));
+        socket.on('change-location-failed', (message: string) => handleChangeLocationFailed(message));
+        socket.on('change-role-failed', (message: string) => handleChangeRoleFailed(message));
+        socket.on('change-ready-failed', (message: string) => handleChangeReadyFailed(message));
+        socket.on('add-team-failed', (message: string) => handleAddTeamFailed(message));
+        socket.on('delete-team-failed', (message: string) => handleDeleteTeamFailed(message));
+        socket.on('start-game-failed', (message: string) => handleGameStartedFailed(message));
 
         socket.on('player-made-bid', (id: string, bid: number) => {handlePlayerMadeBid(id, bid)});
         socket.on('player-gave-clue', (id: string, clue: string) => {handlePlayerGaveClue(id, clue)});
         socket.on('player-gave-guess', (id: string, guess: string, wordIndex: number, hit: boolean) => {handlePlayerGaveGuess(id, guess, wordIndex, hit)});
 
+        socket.on('player-made-bid-failed', (message: string) => handlePlayerMadeBidFailed(message));
+        socket.on('player-gave-clue-failed', (message: string) => handlePlayerGaveClueFailed(message));
+        socket.on('player-gave-guess-failed', (message: string) => handlePlayerGaveGuessFailed(message));
+        
         //Socials
         socket.on('player-gave-clue-social', (id: string) => {handleSocialEvent(id, PlayerSpeechAction.GiveClue)});
         socket.on('player-gave-guess-hit-social', (id: string) => {handleSocialEvent(id, PlayerSpeechAction.MakeGuessHit)});
@@ -84,51 +93,59 @@ generateAccount();
 /* --- --- CREATE OR QUERY LOBBY --- */
 
 const handleCreateLobbySuccess = (newLobby: Lobby, setPage: Function) => {
-    console.log("Received create lobby success");
+    //console.log("Received create lobby success");
     store.dispatch(refreshLobbySettings(newLobby.lobbySettings));
     store.dispatch(refreshGameSettings(newLobby.gameSettings));
     setPage(PageType.Lobby);
 }
 
 const handleCreateLobbyFailed = (message: string) => {
-    console.log("Create Lobby Failed: ", message);
+    //console.log("Create Lobby Failed: ", message);
+    store.dispatch(addNotification({title: "Couldn't create lobby", description: message, type: "error"}));
 }
 
 const handleLobbies = (lobbies:Lobby[], setPage: Function) => {
-    console.log("Received lobbies");
+    //console.log("Received lobbies");
     store.dispatch(refreshLobbies(lobbies));
     store.dispatch(setRefreshDate(new Date().toLocaleTimeString()));
     setPage(PageType.Lobbies)
 }
 
+const handleViewLobbiesFailed = (message: string) => {
+    //console.log("ERROR: ", message);
+    store.dispatch(addNotification({title: "Couldn't view lobbies", description: message, type: "error"}));
+}
+
 /* --- --- JOIN LOBBY --- */
 const handleJoinLobbySuccess = (newLobby: Lobby, setPage: Function) => {
-    console.log("Received join lobby success");
+    //console.log("Received join lobby success");
     store.dispatch(refreshLobbySettings(newLobby.lobbySettings));
     store.dispatch(refreshGameSettings(newLobby.gameSettings));
     setPage(PageType.Lobby);
 }
 
 const handlePlayerJoinedLobby = (player: Player) => {
-    console.log("Received player joined lobby");
+    //console.log("Received player joined lobby");
     store.dispatch(addMember(player.account));
     store.dispatch(addPlayerToLounge(player));
+    store.dispatch(addNotification({title: "Player joined lobby", description: player.account.username + " joined the lobby", type: "info"}));
 }
 
 const handleJoinLobbyFailed = (message: string) => {
-    console.log("Join Lobby Failed: ", message);
+    //console.log("Join Lobby Failed: ", message);
+    store.dispatch(addNotification({title: "Couldn't join lobby", description: message, type: "error"}));
 }
 
 /* --- --- LEAVE LOBBY --- */
 
 const handleLeaveLobbySuccess = () => {
-    console.log("Received leave lobby success");
+    //console.log("Received leave lobby success");
     store.dispatch(resetLobby());
     store.dispatch(resetPlayer());
 }
 
 const handlePlayerLeftLobby = (id: string) => {
-    console.log("Received player left lobby");
+    //console.log("Received player left lobby");
     store.dispatch(removeMember(findAccountObject(id)));
     const playerObject = findPlayerObject(id);
     if (playerObject.location == "lounge") {
@@ -137,17 +154,19 @@ const handlePlayerLeftLobby = (id: string) => {
     else {
         store.dispatch(removePlayerFromTeam(playerObject as { player: Player; location: number; }))
     }
+    store.dispatch(addNotification({title: "Player left lobby", description: playerObject.player.account.username + " left the lobby", type: "info"}));
     
 }
 
 const handleLeaveLobbyFailed = (message: string) => {
-    console.log("ERROR: ", message);
+    //console.log("ERROR: ", message);
+    store.dispatch(addNotification({title: "Couldn't leave lobby", description: message, type: "error"}));
 }
 
 /* --- --- PLAYER UPDATES --- */
 
 const handlePlayerChangedLocation = (id: string, location: number | string) => {
-    console.log("Received player changed location");
+    //console.log("Received player changed location");
     const playerObject = findPlayerObject(id);
     //Remove
     if (playerObject.location == "lounge") {
@@ -166,7 +185,7 @@ const handlePlayerChangedLocation = (id: string, location: number | string) => {
 };
 
 const handlePlayerChangedRole = (id: string, role: GameRole) => {
-    console.log("Received player changed role");
+    //console.log("Received player changed role");
     store.dispatch(refreshPlayerRole({id: id, location: findPlayerObject(id).location, role: role}));
     if (id == store.getState().player.account.id) {
         store.dispatch(updatePlayerRole(role));
@@ -174,7 +193,7 @@ const handlePlayerChangedRole = (id: string, role: GameRole) => {
 };
 
 const handlePlayerChangedReady = (id: string) => {
-    console.log("Received player changed ready");
+    //console.log("Received player changed ready");
     store.dispatch(togglePlayerReady({id: id, location: findPlayerObject(id).location}));
     if (id == store.getState().player.account.id) {
         store.dispatch(toggleLocalPlayerReady());
@@ -182,7 +201,7 @@ const handlePlayerChangedReady = (id: string) => {
 };
 
 const handlePlayerChangedScore = (id: string, score: number) => {
-    console.log("Received player changed score");
+    //console.log("Received player changed score");
     store.dispatch(refreshPlayerScore({id: id, location: findPlayerObject(id).location, score: score}));
     if (id == store.getState().player.account.id) {
         store.dispatch(updatePlayerScore(score));
@@ -190,34 +209,35 @@ const handlePlayerChangedScore = (id: string, score: number) => {
 };
 
 const handleAddTeam = () => {
-    console.log("Received add team");
+    //console.log("Received add team");
     store.dispatch(addTeam());
 }
 
 const handleDeleteTeam = (index: number) => {
-    console.log("Received delete team");
+    //console.log("Received delete team");
     store.dispatch(deleteTeam(index));
 }   
 
 const handleGameStarted = (game: GameState, setPage: Function) => {
-    console.log("Received game started");
+    //console.log("Received game started");
     store.dispatch(refreshGameState(game));
+    store.dispatch(addNotification({title: "Game started", description: "The game has started", type: "info"}))
     setPage(PageType.Game);
 };
 
 const handleGameStartedFailed = (message: string) => {
-    console.log("ERROR: ", message);
-    addNotification({title: "Couldn't start game", description: message, type: "error"});
+    //console.log("ERROR: ", message);
+    store.dispatch(addNotification({title: "Couldn't start game", description: message, type: "error"}));
 }
 
 const handleGuessingStarted = () => {
-    console.log("Received guessing started");
+    //console.log("Received guessing started");
     store.dispatch(setGamePhase(GamePhase.Guess));
+    store.dispatch(addNotification({title: "Guessing started", description: "The guessing phase has started", type: "info"}))
 };
 
 const handleGameEnded = (gameState: GameState, teams: Team []) => {
-    console.log("Received game ended");
-    console.log(gameState)
+    //console.log("Received game ended");
     store.dispatch(setGamePhase(GamePhase.End));
     gameState.words.forEach((word, index) => {
         word.visibility = store.getState().lobby.gameState.words[index].visibility;
@@ -230,30 +250,48 @@ const handleGameEnded = (gameState: GameState, teams: Team []) => {
             store.dispatch(setPlayerLastAction({id: player.account.id, location: index, action: PlayerSpeechAction.None}));
         });
     })
+    store.dispatch(addNotification({title: "Game ended", description: "The game has ended", type: "info"}))
 }
 
 /* --- --- JOIN TEAMS OR LOUNGE --- */
 
 function handleChangeLocationFailed(message: string) {
-    console.log(message);
+    store.dispatch(addNotification({title: "Couldn't change location", description: message, type: "error"}));
 };
+
+function handleChangeRoleFailed(message: string) {
+    store.dispatch(addNotification({title: "Couldn't change role", description: message, type: "error"}));
+}
+
+function handleChangeReadyFailed(message: string) {
+    store.dispatch(addNotification({title: "Couldn't toggle ready", description: message, type: "error"}));
+}
+
+function handleAddTeamFailed(message: string) {
+    store.dispatch(addNotification({title: "Couldn't add team", description: message, type: "error"}));
+}
+
+function handleDeleteTeamFailed(message: string) {
+    store.dispatch(addNotification({title: "Couldn't delete team", description: message, type: "error"}));
+}
 
 /* --- GAME UDPATES --- */
 
 function handlePlayerMadeBid(id: string, bid: number) {
-    console.log("Received player made bid");
+    //console.log("Received player made bid");
     store.dispatch(setBid({account: findAccountObject(id), teamIndex: findPlayerObject(id).location as number, bid: bid}));
     store.dispatch(setPlayerLastAction({id: id, location: findPlayerObject(id).location, action: PlayerSpeechAction.MakeBid}));
+    
 }
 
 function handlePlayerGaveClue(id: string, clue: string) {
-    console.log("Received player gave clue");
+    //console.log("Received player gave clue");
     const location : number = findPlayerObject(id).location as number;
     store.dispatch(addClue({account: findAccountObject(id), teamIndex: location as number, clue: clue}));
 }
 
 function handlePlayerGaveGuess(id: string, guess: string, wordIndex: number, hit: boolean) {
-    console.log("Received player gave guess");
+    //console.log("Received player gave guess");
     const location : number = findPlayerObject(id).location as number;
     if (hit) {
         store.dispatch(revealWord({word: guess, wordIndex: wordIndex, teamIndex: location}));
@@ -261,10 +299,22 @@ function handlePlayerGaveGuess(id: string, guess: string, wordIndex: number, hit
     store.dispatch(addGuess({account: findAccountObject(id), teamIndex: location, guess: guess, hit: hit}));
 }
 
+function handlePlayerMadeBidFailed(message: string) {
+    store.dispatch(addNotification({title: "Couldn't make bid", description: message, type: "error"}));
+}
+
+function handlePlayerGaveClueFailed(message: string) {
+    store.dispatch(addNotification({title: "Couldn't give clue", description: message, type: "error"}));
+}
+
+function handlePlayerGaveGuessFailed(message: string) {
+    store.dispatch(addNotification({title: "Couldn't make guess", description: message, type: "error"}));
+}
+
 /* --- SOCIAL EVENTS --- */
 
 function handleSocialEvent(id: string, event: PlayerSpeechAction) {
-    console.log("Received a social event", event);
+    //console.log("Received a social event", event);
     const location : number = findPlayerObject(id).location as number;
     if (event == PlayerSpeechAction.GiveClue) {store.dispatch(setPlayerLastAction({id: id, location: location as number, action: PlayerSpeechAction.GiveClue}))};
     if (event == PlayerSpeechAction.MakeGuessMiss) {store.dispatch(setPlayerLastAction({id: id, location: location as number, action: PlayerSpeechAction.MakeGuessMiss}))};
@@ -274,13 +324,14 @@ function handleSocialEvent(id: string, event: PlayerSpeechAction) {
 /* --- UTILS --- */
 
 function findAccountObject(id: string): Account {
+
     const members : Account[] = store.getState().lobby.lobbySettings.members;
     for (let i = 0; i < members.length; i++) {
         if (members[i].id == id) {
             return members[i];
         }
     }
-    throw new Error('Shiiiet, no account found in lobby state');
+    throw new Error('No account found');
 }
 
 /**
@@ -307,7 +358,7 @@ function findPlayerObject(id: string): {player: Player, location: string | numbe
             }
         }
     }
-    throw new Error('Shiet, player not found anywhere');
+    throw new Error('No player found');
 }
 
 root.render(

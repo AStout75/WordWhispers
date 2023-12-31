@@ -89,6 +89,7 @@ function lobbiesList(selectedLobbyID: string, setSelectedLobbyID: Function) {
 
     return (
         <div>
+        {lobbies.length == 0 && <div className="text-center">No lobbies found. Create one now!</div>}
         {lobbies.map( (lobby) => {
                 return (
                     <button type="button" className={"select-lobby-button w-100" + (lobby.lobbySettings.id == selectedLobbyID ? " select-lobby-button-selected" : "")} onClick={() => setSelectedLobbyID(selectedLobbyID == lobby.lobbySettings.id ? "" : lobby.lobbySettings.id)} key={lobby.lobbySettings.id}>

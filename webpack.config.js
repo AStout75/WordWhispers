@@ -27,10 +27,19 @@ module.exports = {
           loader: 'url-loader',
         },
       },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader']
+      },
+      {
+        test: /\.ttf$/,
+        type: 'asset/resource',
+      },
+      
     ],
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js', '.jsx'],
+    extensions: ['.tsx', '.ts', '.js', '.jsx', '.css'],
   },
   output: {
     path: path.resolve(__dirname, './dist/bundle'),

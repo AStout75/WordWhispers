@@ -17,6 +17,8 @@ import { GamePhase, GameRole, GameState, TeamState } from '../shared-types/game-
 import { resetPlayer, toggleLocalPlayerReady, updatePlayerRole, updatePlayerScore } from './Store/Reducers/playerSlice';
 import Notifications from './Elements/Notifications';
 import { addNotification } from './Store/Reducers/notificationsSlice';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import '../styles/styles.css';
 
 function App() {
     const [page, setPage] = useState(PageType.Index);

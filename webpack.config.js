@@ -2,7 +2,7 @@ const path = require('path');
 const webpack = require('webpack')
  
 module.exports = {
-  entry: path.resolve(__dirname, './src/frontend/index.tsx'),
+  entry: [path.resolve(__dirname, './src/frontend/index.tsx'), path.resolve(__dirname, 'src/libraries/gsap.js')],
   module: {
     rules: [
       {

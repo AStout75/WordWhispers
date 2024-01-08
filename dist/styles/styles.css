@@ -1,4 +1,10 @@
-@import url("https://fonts.googleapis.com/css2?family=Lilita+One&display=swap");
+@font-face {
+  font-family: "Lilita One";
+  src: url("LilitaOne-Regular.eot");
+  src: url("LilitaOne-Regular.eot?#iefix") format("embedded-opentype"), url("LilitaOne-Regular.ttf") format("truetype"), url("LilitaOne-Regular.svg#Lilita One") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
 /*
 https://coolors.co/05668d-028090-00a896-02c39a-f0f3bd
 */
@@ -13,7 +19,6 @@ https://coolors.co/05668d-028090-00a896-02c39a-f0f3bd
 
 body {
   background: var(--color-light);
-  font-family: "Open Sans", sans-serif;
   font-family: "Lilita One", cursive;
   color: black;
 }

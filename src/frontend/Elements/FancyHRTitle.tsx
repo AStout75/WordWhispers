@@ -1,4 +1,5 @@
 import FlexBox from "./FlexBox";
+import React from 'react'
 
 export function FancyHRTitle(props: {text: string, titleClass: string}) {
     return (

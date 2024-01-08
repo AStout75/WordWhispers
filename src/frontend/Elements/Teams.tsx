@@ -11,6 +11,7 @@ import hit from "../Assets/approved.png";
 import miss from "../Assets/dismissed.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
+import React from 'react'
 
 export function TeamPanel(props: {index: number, team: Team, currentTeamIndex: number, deleteTeam: Function}) {
     const empty = props.team.players.length == 0;
